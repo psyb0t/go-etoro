@@ -2,6 +2,10 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.1.2, 2026-10-16
+
+- The WebSocket client is generated with gen-asyncapi v0.2.3.
+
 ## v0.1.1, 2026-10-16
 
 - The REST client is now package `etoro` at the module root (`github.com/psyb0t/go-etoro`). The WebSocket client is package `etorows` at `github.com/psyb0t/go-etoro/ws`.

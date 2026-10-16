@@ -778,7 +778,7 @@ github.com/psyb0t/ctxerrors/commerr
 # github.com/psyb0t/ctxscope v1.0.3
 ## explicit; go 1.26
 github.com/psyb0t/ctxscope
-# github.com/psyb0t/gen-asyncapi v0.2.2
+# github.com/psyb0t/gen-asyncapi v0.2.3
 ## explicit; go 1.26.9
 github.com/psyb0t/gen-asyncapi/asyncapirt
 github.com/psyb0t/gen-asyncapi/cmd/gen-asyncapi

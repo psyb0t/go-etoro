@@ -12,7 +12,7 @@ require (
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/psyb0t/ctxerrors v0.7.1
 	github.com/psyb0t/ctxscope v1.0.3
-	github.com/psyb0t/gen-asyncapi v0.2.2
+	github.com/psyb0t/gen-asyncapi v0.2.3
 	github.com/stretchr/testify v1.11.1
 )
 
