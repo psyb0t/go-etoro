@@ -6,7 +6,7 @@
 [![license](https://raw.githubusercontent.com/psyb0t/go-etoro/badges/license.svg)](LICENSE)
 [![imported by](https://raw.githubusercontent.com/psyb0t/go-etoro/badges/importers.svg)](https://github.com/psyb0t/go-etoro/blob/badges/importers.md)
 
-Go clients for the [eToro public API](https://api-portal.etoro.com), generated from the specs eToro publishes.
+Unofficial Go clients for the [eToro public API](https://api-portal.etoro.com), generated from the specs eToro publishes.
 
 | Import path | Package | API | Generator |
 |---|---|---|---|
@@ -33,6 +33,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/psyb0t/go-etoro"
 )
 
@@ -49,7 +50,10 @@ func main() {
 		panic(err)
 	}
 
-	res, err := client.GetBalancesWithResponse(context.Background())
+	res, err := client.GetBalancesWithResponse(
+		context.Background(),
+		&etoro.GetBalancesParams{XRequestId: uuid.New()},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -135,7 +139,7 @@ func main() {
 
 Push frames are envelopes whose items carry a `type` and a JSON-encoded `content` string; `ContentValue()` decodes and checks it. Rate values arrive as strings on the wire (`"1.25"`), so the `InstrumentRate` fields are strings too.
 
-Pushes are told apart by their `type`; both order update types go to `HandleOrderUpdateMessage`. An envelope with a type the spec doesn't list fails with `asyncapirt.ErrUnknownMessage`.
+Pushes are told apart by their `type`; both order update types go to `HandleOrderUpdateMessage`. An envelope with a type the spec doesn't list goes to `HandleUnknownMessage`; the embedded `UnimplementedHandler` logs a warning and keeps reading.
 
 ## Regenerating
 
@@ -149,6 +153,34 @@ Each package's `gen.go` declares its own steps, so `make generate` is just `go g
 
 - `gen.go` in the root downloads `openapi.json` and runs oapi-codegen with `config.yaml`.
 - `ws/gen.go` downloads `asyncapi.json`, runs `scripts/match-wire-types.sh`, and runs gen-asyncapi with `ws/config.yaml`. The match step turns the number fields of every schema whose description says its values arrive as JSON strings, such as `InstrumentRate`, into strings, so real frames decode.
+
+## Agent integrations
+
+The [skill](.agents/skills/go-etoro) teaches a coding agent how to use go-etoro when it writes Go. It works in any agent that reads `.agents/skills/`, and installs natively in the clients below.
+
+### Claude Code
+
+```bash
+claude plugin marketplace add psyb0t/agents
+claude plugin install go-etoro@psyb0t
+```
+
+### Codex
+
+```bash
+codex plugin marketplace add psyb0t/agents
+codex plugin add go-etoro@psyb0t
+```
+
+Codex also picks the skill up with no install in any checkout of this repo.
+
+### OpenClaw
+
+The skill is published to ClawHub on every release:
+
+```bash
+openclaw skills install @psyb0t/go-etoro
+```
 
 ## Development
 

@@ -1,0 +1,11 @@
+{
+  "name": "go-etoro",
+  "version": "0.1.3",
+  "description": "Unofficial Go clients for the eToro public API: a typed REST client and a WebSocket client for rates, candles, market status and order updates, generated from the specs eToro publishes.",
+  "author": { "name": "psyb0t", "url": "https://github.com/psyb0t" },
+  "homepage": "https://github.com/psyb0t/go-etoro",
+  "repository": "https://github.com/psyb0t/go-etoro",
+  "license": "MIT",
+  "keywords": ["etoro", "trading", "api-client", "go-library", "websocket", "openapi", "asyncapi"],
+  "skills": "./skills/"
+}

@@ -2,6 +2,10 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.1.3, 2026-10-16
+
+- Added the `go-etoro` agent skill. The README's new Agent integrations section has the install commands for Claude Code, Codex and ClawHub, and the README now says the clients are unofficial.
+
 ## v0.1.2, 2026-10-16
 
 - The WebSocket client is generated with gen-asyncapi v0.2.3.
