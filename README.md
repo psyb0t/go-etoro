@@ -8,12 +8,12 @@
 
 Go clients for the [eToro public API](https://api-portal.etoro.com), generated from the specs eToro publishes.
 
-| Directory | Package | API | Generator |
+| Import path | Package | API | Generator |
 |---|---|---|---|
-| `rest/` | `etororest` | REST, `https://public-api.etoro.com` | [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) |
-| `ws/` | `etorows` | WebSocket, `wss://ws.etoro.com/ws` | [gen-asyncapi](https://github.com/psyb0t/gen-asyncapi) |
+| `github.com/psyb0t/go-etoro` (repo root) | `etoro` | REST, `https://public-api.etoro.com` | [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) |
+| `github.com/psyb0t/go-etoro/ws` | `etorows` | WebSocket, `wss://ws.etoro.com/ws` | [gen-asyncapi](https://github.com/psyb0t/gen-asyncapi) |
 
-Everything in `rest/` and `ws/` except `gen.go` and the generator configs is generated. Don't edit it by hand, regenerate it.
+`client.gen.go` in the root and everything in `ws/` except `gen.go` and `config.yaml` is generated. Don't edit it by hand, regenerate it.
 
 ## Install
 
@@ -33,18 +33,18 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/psyb0t/go-etoro/rest"
+	"github.com/psyb0t/go-etoro"
 )
 
 func main() {
-	auth := etororest.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
+	auth := etoro.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
 		req.Header.Set("x-api-key", os.Getenv("ETORO_API_KEY"))
 		req.Header.Set("x-user-key", os.Getenv("ETORO_USER_KEY"))
 
 		return nil
 	})
 
-	client, err := etororest.NewClientWithResponses("https://public-api.etoro.com", auth)
+	client, err := etoro.NewClientWithResponses("https://public-api.etoro.com", auth)
 	if err != nil {
 		panic(err)
 	}
@@ -147,7 +147,7 @@ make generate
 
 Each package's `gen.go` declares its own steps, so `make generate` is just `go generate ./...`:
 
-- `rest/gen.go` downloads `openapi.json` and runs oapi-codegen with `rest/config.yaml`.
+- `gen.go` in the root downloads `openapi.json` and runs oapi-codegen with `config.yaml`.
 - `ws/gen.go` downloads `asyncapi.json`, runs `scripts/match-wire-types.sh`, and runs gen-asyncapi with `ws/config.yaml`. The match step turns the number fields of every schema whose description says its values arrive as JSON strings, such as `InstrumentRate`, into strings, so real frames decode.
 
 ## Development

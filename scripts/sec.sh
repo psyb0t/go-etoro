@@ -62,7 +62,9 @@ semgrep_targets=(
 	.github
 	Dockerfile.dev
 	Makefile
-	rest
+	client.gen.go
+	config.yaml
+	gen.go
 	scripts
 	ws
 )

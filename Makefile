@@ -33,7 +33,7 @@ format: dev-image ## Format Go source
 	@$(DEV_RUN) sh -ceu 'find . -path ./vendor -prune -o -path ./.research_files -prune -o -type f -name "*.go" -exec gofmt -w {} +'
 	@$(DEV_RUN) shfmt -w scripts/*.sh
 
-generate: dev-image ## Download the latest eToro specs and regenerate rest/ and ws/
+generate: dev-image ## Download the latest eToro specs and regenerate the root package and ws/
 	@$(DEV_RUN) go generate ./...
 
 lint: dev-image ## Lint all Golang files

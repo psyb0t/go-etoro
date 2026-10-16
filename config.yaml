@@ -1,4 +1,4 @@
-package: etororest
+package: etoro
 generate:
   client: true
   models: true

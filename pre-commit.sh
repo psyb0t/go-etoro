@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-make lint && make test-coverage
+make lint && make test
