@@ -1,0 +1,11 @@
+package: etororest
+generate:
+  client: true
+  models: true
+output: client.gen.go
+output-options:
+  # The eToro spec reuses names across component sections (Instrument is both a
+  # schema and a client response wrapper).
+  resolve-type-name-collisions: true
+compatibility:
+  always-prefix-enum-values: true

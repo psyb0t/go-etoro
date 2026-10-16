@@ -1,0 +1,21 @@
+package: etorows
+output: etorows.gen.go
+output-options:
+  # Every push frame is an envelope whose items carry the update type, and the
+  # envelopes share one shape, so only that value tells them apart. Order
+  # updates come in two types, so their matcher lists both.
+  message-matchers:
+    InstrumentRateMessage:
+      /messages/0/type: Trading.Instrument.Rate
+    InstrumentCandleMessage:
+      /messages/0/type: Trading.Instrument.Candle
+    InstrumentMarketStatusMessage:
+      /messages/0/type: Trading.Instrument.MarketStatus
+    PositionOpenedMessage:
+      /messages/0/type: Trading.Position.Opened
+    PositionClosedMessage:
+      /messages/0/type: Trading.Position.Closed
+    OrderUpdateMessage:
+      /messages/0/type:
+        - Trading.OrderForOpen.Update
+        - Trading.OrderForCloseMultiple.Update
