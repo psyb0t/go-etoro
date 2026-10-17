@@ -43,6 +43,7 @@ make sec       # gitleaks, govulncheck, semgrep
 - The spec portal answers non-browser user agents with 403; `scripts/fetch-spec.sh` sends a browser user agent.
 - eToro's schemas declare some rate fields as numbers while the frames carry strings. Drop `match-wire-types.sh` and real frames stop decoding while the tests that build frames from the types still pass.
 - eToro reuses names across component sections, so `config.yaml` turns on `resolve-type-name-collisions` and some response wrappers get a `2` suffix (`GetBalancesResponse2`).
+- `.github/workflows/regen.yml` regenerates the client every day and releases the result. When the checks fail, Claude edits the repository to fix them, but a fix may not touch the paths listed under `fix_protected_paths` in that workflow: the workflows, the Makefile, `AGENTS.md`, `.agents/rules/`, the lint, security and spec download scripts and their configs. A problem that needs a change there fails the run and needs a manual fix.
 
 ## Rules
 

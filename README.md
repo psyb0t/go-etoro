@@ -154,6 +154,8 @@ Each package's `gen.go` declares its own steps, so `make generate` is just `go g
 - `gen.go` in the root downloads `openapi.json` and runs oapi-codegen with `config.yaml`.
 - `ws/gen.go` downloads `asyncapi.json`, runs `scripts/match-wire-types.sh`, and runs gen-asyncapi with `ws/config.yaml`. The match step turns the number fields of every schema whose description says its values arrive as JSON strings, such as `InstrumentRate`, into strings, so real frames decode.
 
+`.github/workflows/regen.yml` does the same every day in CI. When the new spec changes the client, it runs `make lint`, `make test` and `make sec`. If a check fails, Claude edits the code and the checks run again, up to three times, and a review step reads the result. A passing change is committed with a CHANGELOG entry and tagged as the next release: a patch version for fixes and additions, a minor version for breaking changes.
+
 ## Agent integrations
 
 The [skill](.agents/skills/go-etoro) teaches a coding agent how to use go-etoro when it writes Go. It works in any agent that reads `.agents/skills/`, and installs natively in the clients below.
