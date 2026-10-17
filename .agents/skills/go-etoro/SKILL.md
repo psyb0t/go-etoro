@@ -1,6 +1,7 @@
 ---
 name: go-etoro
 description: Unofficial Go clients for the eToro public API, generated from the specs eToro publishes. The root package `etoro` (`github.com/psyb0t/go-etoro`) is an oapi-codegen REST client for `https://public-api.etoro.com` with a typed `...WithResponse` method per endpoint (balances, market data, instruments, rates, candles, feeds, portfolios, transfers, posts). The `etorows` package (`github.com/psyb0t/go-etoro/ws`) is a typed WebSocket client for `wss://ws.etoro.com/ws` that authenticates, subscribes to topics and decodes instrument rate, candle and market status pushes and order and position updates through a `Handler`. Use when Go code needs to call the eToro API or stream eToro market data, or already imports go-etoro.
+license: MIT
 homepage: https://github.com/psyb0t/go-etoro
 user-invocable: true
 metadata:
@@ -9,9 +10,6 @@ metadata:
     requires:
       bins:
         - go
-      env:
-        - ETORO_API_KEY
-        - ETORO_USER_KEY
 permissions:
   filesystem: "Guides edits to the Go source of the current project. The library reads and writes no files."
   shell: "The Go toolchain (`go get`, `go build`, `go test`) to add and compile the dependency."
@@ -41,6 +39,22 @@ For install details, the request ID header, rate limit headers and the WebSocket
 - The code is not Go. This module ships only Go packages.
 - You need a broker other than eToro, or an SDK maintained by eToro. This one is unofficial and not affiliated with eToro.
 - You want to change the generated client itself. `client.gen.go` and `ws/etorows.gen.go` are generated; see `AGENTS.md` in the repo.
+
+## Finding endpoints and types
+
+The examples below cover a few calls. Every operation in the spec has a generated method, and the spec's descriptions are on them as Go doc comments. Look names and fields up instead of guessing. After `go get github.com/psyb0t/go-etoro`, from inside your module:
+
+```bash
+go doc github.com/psyb0t/go-etoro ClientWithResponsesInterface         # every endpoint method
+go doc github.com/psyb0t/go-etoro GetMarketDataInstrumentsRatesParams  # one method, params type or model
+go doc -all github.com/psyb0t/go-etoro                                 # the whole package
+go doc github.com/psyb0t/go-etoro/ws Handler                           # every WebSocket message handler
+go doc github.com/psyb0t/go-etoro/ws Client                            # the WebSocket Send methods and Run
+```
+
+The same documentation is at https://pkg.go.dev/github.com/psyb0t/go-etoro.
+
+Method names come from the spec's operation IDs. `<OperationId>WithResponse` takes the context, then the path parameters in order, then `*<OperationId>Params` when the operation has query or header parameters, then the request body when it has one. The `JSON200` field (or `JSON201` and so on, per declared status) holds the decoded body; it is nil for any other status. Where a response type name clashes with a schema name, the response wrapper gets a `2` suffix, so `GetBalancesWithResponse` returns `*etoro.GetBalancesResponse2`.
 
 ## REST
 

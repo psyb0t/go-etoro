@@ -15,6 +15,16 @@ Unofficial Go clients for the [eToro public API](https://api-portal.etoro.com), 
 
 `client.gen.go` in the root and everything in `ws/` except `gen.go` and `config.yaml` is generated. Don't edit it by hand, regenerate it.
 
+## Contents
+
+- [Install](#install)
+- [REST](#rest)
+- [WebSocket](#websocket)
+- [Regenerating](#regenerating)
+- [Agent integrations](#agent-integrations)
+- [Development](#development)
+- [License](#license)
+
 ## Install
 
 ```sh
@@ -61,6 +71,8 @@ func main() {
 	_ = res.JSON200
 }
 ```
+
+The full API, with the spec's descriptions as doc comments, is in the [Go reference](https://pkg.go.dev/github.com/psyb0t/go-etoro) and in `go doc github.com/psyb0t/go-etoro` (`go doc github.com/psyb0t/go-etoro/ws` for the WebSocket package).
 
 ## WebSocket
 

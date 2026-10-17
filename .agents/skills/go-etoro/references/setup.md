@@ -25,7 +25,7 @@ go get github.com/google/uuid
 
 - `etoro.NewClientWithResponses(server, opts...)` builds the client. Options: `etoro.WithRequestEditorFn` (adds the auth headers to every request), `etoro.WithHTTPClient` (your own `*http.Client`, for timeouts), `etoro.WithBaseURL`.
 - Each operation has three forms: `Client.X` returns the raw `*http.Response`, `ClientWithResponses.XWithResponse` returns a parsed `*XResponse`, and `NewXRequest` builds the `*http.Request` only. Operations with a JSON body also have `XWithBodyWithResponse` for a raw `io.Reader` body.
-- Method names come from eToro's operation IDs. Find one with `grep -n 'WithResponse(ctx' client.gen.go` in the module source rather than guessing.
+- Method names come from eToro's operation IDs. List them with `go doc github.com/psyb0t/go-etoro ClientWithResponsesInterface` rather than guessing.
 - Most params structs have a required `XRequestId openapi_types.UUID`, sent as the `x-request-id` header. `openapi_types.UUID` is `uuid.UUID`, so `uuid.New()` fills it.
 - Where an operation's response type name clashes with a schema name, the response wrapper gets a `2` suffix: `GetBalancesWithResponse` returns `*etoro.GetBalancesResponse2`, whose `JSON200` is the `*etoro.GetBalancesResponse` schema.
 
@@ -44,7 +44,7 @@ The method's `error` is non-nil only when the request could not be sent or the b
 ## WebSocket client
 
 - `gorillaws.Dial(ctx, etorows.ServerEtoroURL)` opens the connection; `etorows.NewClient(conn)` wraps it; `Close()` closes it.
-- Send methods: `Authenticate`, `Subscribe`, `Unsubscribe`, each taking its envelope (`ID`, `Operation`, `Data`). Use a fresh `ID` per request, for example `rand.Text()` from `crypto/rand`.
+- Send methods: `Authenticate`, `Subscribe`, `Unsubscribe`, each taking its envelope (`ID`, `Operation`, `Data`). Per-channel variants such as `InstrumentRatesSubscribe` and `PrivatePortfolioAuthenticate` send the same envelopes. Use a fresh `ID` per request, for example `rand.Text()` from `crypto/rand`.
 - Topic helpers: `etorows.InstrumentRatesAddress(id)` gives `instrument:<id>`, `etorows.InstrumentCandlesAddress(id)` gives `candle:<id>`, and `etorows.PrivatePortfolioAddressTemplate` is `private` for the user's own order and position updates.
 - `Run(ctx, handler)` reads frames until `ctx` ends or a read fails, and calls one method per frame.
 
