@@ -4625,7 +4625,7 @@ type AccountBalanceData struct {
 	// DisplayCurrency The display currency (ISO 4217) used for displayBalance.
 	DisplayCurrency *string `json:"displayCurrency,omitempty"`
 
-	// EquityDetails Provider-specific balance details, returned only when the request includes expand=equityDetails. All fields are nullable; only fields relevant to the account's provider are populated. Trading accounts populate available/frozenCash/currentPNL/totalUsedMargin; Crypto accounts populate cryptoId, the balance variants, fiatConversionCurrency, and orderIndex; Spaceship accounts return no equityDetails object at all; Plaee accounts populate available (withdrawable cash), frozenCash (cash reserved by resting prediction-market orders), currentPNL (unrealised profit and loss on open positions), balance (cash) and totalBalance (cash plus open positions), all in the account currency, plus hasOpenPositions (true when an open position or a resting order exists at Plaee). Currency: the fiat amounts here are denominated in the enclosing account's native currency (its currency field), not in displayCurrency — the object carries no currency marker of its own. The exception is the *InFiat crypto fields, which use fiatConversionCurrency.
+	// EquityDetails Provider-specific balance details, returned only when the request includes expand=equityDetails. All fields are nullable; only fields relevant to the account's provider are populated. Trading accounts populate available/frozenCash/currentPNL/totalUsedMargin; Crypto accounts populate cryptoId, the balance variants, fiatConversionCurrency, and orderIndex; Spaceship accounts return no equityDetails object at all; Plaee accounts populate available (withdrawable cash), frozenCash (cash reserved by resting prediction-market orders), currentPNL (unrealised profit and loss on open positions), realizedPNL (realised profit and loss of closed and settled positions, all time), invested (cost of the open positions), positionsValue (market value of the open positions), openOrdersValue (money in resting orders not yet matched), balance (cash) and totalBalance (cash plus resting orders plus open positions), all in the account currency, plus openPositionsCount (number of open positions) and hasOpenPositions (true when an open position or a resting order exists at Plaee). Currency: the fiat amounts here are denominated in the enclosing account's native currency (its currency field), not in displayCurrency — the object carries no currency marker of its own. The exception is the *InFiat crypto fields, which use fiatConversionCurrency.
 	EquityDetails *EquityDetailsData `json:"equityDetails,omitempty"`
 
 	// ExchangeRate Exchange rate applied to convert balance to displayCurrency.
@@ -6881,9 +6881,9 @@ type EmotionParentType string
 // Example: Like
 type EmotionType string
 
-// EquityDetailsData Provider-specific balance details, returned only when the request includes expand=equityDetails. All fields are nullable; only fields relevant to the account's provider are populated. Trading accounts populate available/frozenCash/currentPNL/totalUsedMargin; Crypto accounts populate cryptoId, the balance variants, fiatConversionCurrency, and orderIndex; Spaceship accounts return no equityDetails object at all; Plaee accounts populate available (withdrawable cash), frozenCash (cash reserved by resting prediction-market orders), currentPNL (unrealised profit and loss on open positions), balance (cash) and totalBalance (cash plus open positions), all in the account currency, plus hasOpenPositions (true when an open position or a resting order exists at Plaee). Currency: the fiat amounts here are denominated in the enclosing account's native currency (its currency field), not in displayCurrency — the object carries no currency marker of its own. The exception is the *InFiat crypto fields, which use fiatConversionCurrency.
+// EquityDetailsData Provider-specific balance details, returned only when the request includes expand=equityDetails. All fields are nullable; only fields relevant to the account's provider are populated. Trading accounts populate available/frozenCash/currentPNL/totalUsedMargin; Crypto accounts populate cryptoId, the balance variants, fiatConversionCurrency, and orderIndex; Spaceship accounts return no equityDetails object at all; Plaee accounts populate available (withdrawable cash), frozenCash (cash reserved by resting prediction-market orders), currentPNL (unrealised profit and loss on open positions), realizedPNL (realised profit and loss of closed and settled positions, all time), invested (cost of the open positions), positionsValue (market value of the open positions), openOrdersValue (money in resting orders not yet matched), balance (cash) and totalBalance (cash plus resting orders plus open positions), all in the account currency, plus openPositionsCount (number of open positions) and hasOpenPositions (true when an open position or a resting order exists at Plaee). Currency: the fiat amounts here are denominated in the enclosing account's native currency (its currency field), not in displayCurrency — the object carries no currency marker of its own. The exception is the *InFiat crypto fields, which use fiatConversionCurrency.
 type EquityDetailsData struct {
-	// Available Funds available to trade or withdraw (buying power). This is the correct field for pre-trade affordability checks — use it instead of totalBalance or displayBalance. IMPORTANT: this value is denominated in the account's native currency (the sibling currency field), NOT in displayCurrency, and no currency is stated inside equityDetails itself. Convert it before comparing against displayBalance, totalBalance, or any amount in the display currency — for example a GBP Cash account reports available in GBP while displayBalance is in USD. Populated for Trading, Options, MoneyFarm, Cash and Plaee (where it is the withdrawable cash) only; for Crypto use spendableBalanceInFiat instead, and Spaceship accounts return no equityDetails at all. For Cash accounts this equals the account's balance.
+	// Available Funds available to trade or withdraw (buying power); for Plaee accounts only the withdrawable cash - cash that can still be used at Plaee but not withdrawn is in balance. This is the correct field for pre-trade affordability checks — use it instead of totalBalance or displayBalance. IMPORTANT: this value is denominated in the account's native currency (the sibling currency field), NOT in displayCurrency, and no currency is stated inside equityDetails itself. Convert it before comparing against displayBalance, totalBalance, or any amount in the display currency — for example a GBP Cash account reports available in GBP while displayBalance is in USD. Populated for Trading, Options, MoneyFarm, Cash and Plaee (where it is the withdrawable cash) only; for Crypto use spendableBalanceInFiat instead, and Spaceship accounts return no equityDetails at all. For Cash accounts this equals the account's balance.
 	Available *float64 `json:"available,omitempty"`
 
 	// Balance Balance in native crypto units (Crypto); cash in the account currency (Plaee).
@@ -6907,8 +6907,23 @@ type EquityDetailsData struct {
 	// HasOpenPositions Plaee only: true when the user has something open at Plaee - an open prediction-market position or a resting order - and false when nothing is open. Absent when Plaee did not report it. Read this to decide whether to show an "open positions" state; the amounts cannot tell (a position can be worth 0).
 	HasOpenPositions *bool `json:"hasOpenPositions,omitempty"`
 
+	// Invested Plaee only: cost of the open prediction-market positions (what was paid for what is still open), in the account currency. Absent when Plaee did not report it.
+	Invested *float64 `json:"invested,omitempty"`
+
+	// OpenOrdersValue Plaee only: money in resting prediction-market orders that have not been matched yet, in the account currency. Absent when Plaee did not report it.
+	OpenOrdersValue *float64 `json:"openOrdersValue,omitempty"`
+
+	// OpenPositionsCount Plaee only: number of open prediction-market positions. Resting orders are not counted - hasOpenPositions covers both. Absent when Plaee did not report it.
+	OpenPositionsCount *int32 `json:"openPositionsCount,omitempty"`
+
 	// OrderIndex Display order index for sorting (Crypto).
 	OrderIndex *int32 `json:"orderIndex,omitempty"`
+
+	// PositionsValue Plaee only: current market value of the open prediction-market positions, in the account currency. Absent when Plaee did not report it.
+	PositionsValue *float64 `json:"positionsValue,omitempty"`
+
+	// RealizedPNL Plaee only: realized profit and loss of closed and settled prediction-market positions, all time, in the account currency. Absent when Plaee did not report it.
+	RealizedPNL *float64 `json:"realizedPNL,omitempty"`
 
 	// SpendableBalance Spendable balance in native crypto units — not a currency amount. Use spendableBalanceInFiat for a value comparable to other accounts (Crypto).
 	SpendableBalance *float64 `json:"spendableBalance,omitempty"`
@@ -6916,7 +6931,7 @@ type EquityDetailsData struct {
 	// SpendableBalanceInFiat Spendable balance converted to fiat, in fiatConversionCurrency. This is the correct field for affordability checks on Crypto accounts — the available field is not populated for Crypto (Crypto).
 	SpendableBalanceInFiat *float64 `json:"spendableBalanceInFiat,omitempty"`
 
-	// TotalBalance Total balance in native crypto units, including pending (Crypto); cash plus open positions (Plaee).
+	// TotalBalance Total balance in native crypto units, including pending (Crypto); cash plus resting orders plus open positions (Plaee).
 	TotalBalance *float64 `json:"totalBalance,omitempty"`
 
 	// TotalBalanceInFiat Total balance converted to fiat, including pending (Crypto).
@@ -9571,7 +9586,7 @@ type PortfolioResponse struct {
 			PendingForClosure *bool `json:"pendingForClosure,omitempty"`
 
 			// Positions Positions within this copy trading mirror
-			Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
+			Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
 
 			// StartedCopyDate Date and time when the mirror trading was initiated
 			StartedCopyDate *time.Time `json:"startedCopyDate,omitempty"`
@@ -9641,7 +9656,7 @@ type PortfolioResponse struct {
 		OrdersForOpen *[]map[string]interface{} `json:"ordersForOpen,omitempty"`
 
 		// Positions List of currently open trading positions
-		Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
+		Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
 
 		// StockOrders Obsolete
 		StockOrders *[]map[string]interface{} `json:"stockOrders,omitempty"`
@@ -11090,114 +11105,6 @@ type TradingDemoAdminApiUnifiedOrderRequestStopLossType string
 // Example: buy
 type TradingDemoAdminApiUnifiedOrderRequestTransaction string
 
-// TradingDemoApiPosition Individual position details
-type TradingDemoApiPosition struct {
-	// CID Customer ID associated with the position
-	CID *int `json:"CID,omitempty"`
-
-	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
-	Amount *float32 `json:"amount,omitempty"`
-
-	// InitialAmountInDollars Initial investment USD amount in the position
-	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
-
-	// InitialUnits Initial invested units in the position
-	InitialUnits *float32 `json:"initialUnits,omitempty"`
-
-	// InstrumentID Identifier of the traded instrument
-	InstrumentID *int `json:"instrumentID,omitempty"`
-
-	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
-	IsBuy *bool `json:"isBuy,omitempty"`
-
-	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
-	IsDetached *bool `json:"isDetached,omitempty"`
-
-	// IsDiscounted Obsolete
-	IsDiscounted *bool `json:"isDiscounted,omitempty"`
-
-	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
-	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
-
-	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
-	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
-
-	// IsPartiallyAltered Indication whether this position was partially closed
-	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
-
-	// IsSettled Obsolete
-	IsSettled *bool `json:"isSettled,omitempty"`
-
-	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
-	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
-
-	// Leverage Leverage multiplier applied to the position
-	Leverage *float32 `json:"leverage,omitempty"`
-
-	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
-	LotCount *float32 `json:"lotCount,omitempty"`
-
-	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
-	MirrorID *int `json:"mirrorID,omitempty"`
-
-	// OpenConversionRate Conversion rate at position opening
-	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
-
-	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
-	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
-
-	// OpenPositionActionType Position open reason
-	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
-
-	// OpenRate Entry price of the position in the instrument's currency
-	OpenRate *float32 `json:"openRate,omitempty"`
-
-	// OrderID Original orderID the position was opened by. Need to match together with orderType
-	OrderID *int `json:"orderID,omitempty"`
-
-	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
-	OrderType *int `json:"orderType,omitempty"`
-
-	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
-	ParentPositionID *int `json:"parentPositionID,omitempty"`
-
-	// PnlVersion Pnl formula used for calculating profit and loss
-	PnlVersion *int `json:"pnlVersion,omitempty"`
-
-	// PositionID Unique identifier for the position
-	PositionID *int `json:"positionID,omitempty"`
-
-	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
-	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
-
-	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
-	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
-
-	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
-	StopLossRate *float32 `json:"stopLossRate,omitempty"`
-
-	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
-	StopLossVersion *int `json:"stopLossVersion,omitempty"`
-
-	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
-	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
-
-	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
-	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
-
-	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
-	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
-
-	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
-	TotalFees *float32 `json:"totalFees,omitempty"`
-
-	// Units Number of units in the position
-	Units *float32 `json:"units,omitempty"`
-
-	// UnitsBaseValueDollars Current units invested value in USD
-	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
-}
-
 // TradingPortfolioDemoApiAggregatedPortfolioAccountTotals Account-level balance and equity totals.
 type TradingPortfolioDemoApiAggregatedPortfolioAccountTotals struct {
 	// AccountAvailableCash Cash available for new trades: accountBalance minus accountFrozenCash.
@@ -11886,6 +11793,114 @@ type TradingRealAdminApiUnifiedOrderRequestStopLossType string
 //
 // Example: buy
 type TradingRealAdminApiUnifiedOrderRequestTransaction string
+
+// TradingRealApiPosition Individual position details
+type TradingRealApiPosition struct {
+	// CID Customer ID associated with the position
+	CID *int `json:"CID,omitempty"`
+
+	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
+	Amount *float32 `json:"amount,omitempty"`
+
+	// InitialAmountInDollars Initial investment USD amount in the position
+	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
+
+	// InitialUnits Initial invested units in the position
+	InitialUnits *float32 `json:"initialUnits,omitempty"`
+
+	// InstrumentID Identifier of the traded instrument
+	InstrumentID *int `json:"instrumentID,omitempty"`
+
+	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
+	IsBuy *bool `json:"isBuy,omitempty"`
+
+	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
+	IsDetached *bool `json:"isDetached,omitempty"`
+
+	// IsDiscounted Obsolete
+	IsDiscounted *bool `json:"isDiscounted,omitempty"`
+
+	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
+	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
+
+	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
+	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
+
+	// IsPartiallyAltered Indication whether this position was partially closed
+	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
+
+	// IsSettled Obsolete
+	IsSettled *bool `json:"isSettled,omitempty"`
+
+	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
+	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
+
+	// Leverage Leverage multiplier applied to the position
+	Leverage *float32 `json:"leverage,omitempty"`
+
+	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
+	LotCount *float32 `json:"lotCount,omitempty"`
+
+	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
+	MirrorID *int `json:"mirrorID,omitempty"`
+
+	// OpenConversionRate Conversion rate at position opening
+	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
+
+	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
+	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
+
+	// OpenPositionActionType Position open reason
+	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
+
+	// OpenRate Entry price of the position in the instrument's currency
+	OpenRate *float32 `json:"openRate,omitempty"`
+
+	// OrderID Original orderID the position was opened by. Need to match together with orderType
+	OrderID *int `json:"orderID,omitempty"`
+
+	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
+	OrderType *int `json:"orderType,omitempty"`
+
+	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
+	ParentPositionID *int `json:"parentPositionID,omitempty"`
+
+	// PnlVersion Pnl formula used for calculating profit and loss
+	PnlVersion *int `json:"pnlVersion,omitempty"`
+
+	// PositionID Unique identifier for the position
+	PositionID *int `json:"positionID,omitempty"`
+
+	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
+	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
+
+	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
+	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
+
+	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
+	StopLossRate *float32 `json:"stopLossRate,omitempty"`
+
+	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
+	StopLossVersion *int `json:"stopLossVersion,omitempty"`
+
+	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
+	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
+
+	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
+	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
+
+	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
+	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
+
+	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
+	TotalFees *float32 `json:"totalFees,omitempty"`
+
+	// Units Number of units in the position
+	Units *float32 `json:"units,omitempty"`
+
+	// UnitsBaseValueDollars Current units invested value in USD
+	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
+}
 
 // TransferAccountRef Account identifier for a transfer participant
 type TransferAccountRef struct {

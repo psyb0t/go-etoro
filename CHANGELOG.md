@@ -2,6 +2,15 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.2.0, 2026-10-21
+
+- Regenerated from eToro spec version v1.398.0.
+- REST: `TradingDemoApiPosition` is removed. The `positions` fields now use the new `TradingRealApiPosition` type, so code that names the old type must switch.
+- REST: `EquityDetailsData` has new fields `Invested`, `OpenOrdersValue`, `OpenPositionsCount`, `PositionsValue` and `RealizedPNL`.
+- WebSocket: `InstrumentCandlesAddress` and `InstrumentRatesAddress` are removed.
+- WebSocket: `InstrumentCandlesAddressTemplate`, `InstrumentRatesAddressTemplate` and `PrivatePortfolioAddressTemplate` now have the value "/ws" instead of "candle:{instrumentId}", "instrument:{instrumentId}" and "private".
+- The pinned Go toolchain moves to 1.26.10 in `go.mod` and `Dockerfile.dev`, which fixes the govulncheck finding GO-2026-6809 in `crypto/x509`. The agent skill setup notes name the same version.
+
 ## v0.1.5, 2026-10-17
 
 - Documentation only. The agent skill explains how to look up every endpoint, parameter and model with `go doc` or on pkg.go.dev, and declares its license.

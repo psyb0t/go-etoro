@@ -4,7 +4,7 @@ This module is unofficial and not affiliated with eToro.
 
 ## Requirements
 
-- Go 1.26.9 or newer, per the module's `go.mod`.
+- Go 1.26.10 or newer, per the module's `go.mod`.
 - An eToro API key and user key from the API key section of your eToro account settings, exported as `ETORO_API_KEY` and `ETORO_USER_KEY`.
 
 ## Install
