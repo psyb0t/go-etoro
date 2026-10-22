@@ -2,6 +2,12 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.3.0, 2026-10-22
+
+- Regenerated from eToro spec version v1.399.0.
+- REST: `TradingRealApiPosition` is removed. The `positions` fields now use the new `TradingDemoApiPosition` type, which has the same fields, so code that names the old type must switch.
+- Generated doc comments in the REST and WebSocket clients now spell the brand "etoro" instead of "eToro". The WebSocket source header names v1.399.0.
+
 ## v0.2.0, 2026-10-21
 
 - Regenerated from eToro spec version v1.398.0.

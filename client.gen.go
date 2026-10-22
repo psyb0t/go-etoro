@@ -4610,7 +4610,7 @@ type AccountBalanceData struct {
 	// AccountId Unique identifier of the account.
 	AccountId *string `json:"accountId,omitempty"`
 
-	// AccountType The type of eToro account, as returned in response bodies.
+	// AccountType The type of etoro account, as returned in response bodies.
 	AccountType *BalanceAggregatorApiAccountType `json:"accountType,omitempty"`
 
 	// Balance Account balance in the account's native currency (see the currency field). Its meaning depends on accountType: total account value including invested positions for Trading, Options, MoneyFarm, Spaceship and Plaee (for Plaee: cash plus the mark-to-market value of open prediction-market positions); holdings in native crypto units for Crypto; available cash for Cash. For Trading it equals equityDetails.available + equityDetails.totalUsedMargin + equityDetails.currentPNL. Not a spendable amount except on Cash accounts — see equityDetails.available.
@@ -4644,7 +4644,7 @@ type AccountIdentifier struct {
 	AccountType PaymentsApiAccountType `json:"accountType"`
 }
 
-// AccountTypePathParam The type of eToro account, as accepted in the accountType path segment. Lowercase only: the route matches these values exactly and returns 404 for any other casing or for numeric values. Note this differs from the casing used for accountType in response bodies.
+// AccountTypePathParam The type of etoro account, as accepted in the accountType path segment. Lowercase only: the route matches these values exactly and returns 404 for any other casing or for numeric values. Note this differs from the casing used for accountType in response bodies.
 //
 // Example: trading
 type AccountTypePathParam string
@@ -5146,7 +5146,7 @@ type Attachments = []struct {
 // Example: Image
 type AttachmentsMediaType string
 
-// BalanceAggregatorApiAccountType The type of eToro account, as returned in response bodies.
+// BalanceAggregatorApiAccountType The type of etoro account, as returned in response bodies.
 type BalanceAggregatorApiAccountType string
 
 // BalanceAggregatorApiPublicErrorResponse Standard error response returned by the API gateway.
@@ -5586,7 +5586,7 @@ type Comment struct {
 			// Example: true
 			IsDirect *bool `json:"isDirect,omitempty"`
 
-			// User eToro user profile (slim projection)
+			// User etoro user profile (slim projection)
 			User *User `json:"user,omitempty"`
 		} `json:"mentions,omitempty"`
 
@@ -5608,7 +5608,7 @@ type Comment struct {
 		// Example: 98765
 		ObsoleteId *string `json:"obsoleteId,omitempty"`
 
-		// Owner eToro user profile (slim projection)
+		// Owner etoro user profile (slim projection)
 		Owner *User `json:"owner,omitempty"`
 
 		// Parent Parent entity reference
@@ -5877,9 +5877,9 @@ type CopyTradingStatusResponse struct {
 	ReferenceID string `json:"referenceID"`
 }
 
-// CostBreakdown Individual cost component in the requested order currency. `markup` is a price or currency-conversion markup applied by eToro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
+// CostBreakdown Individual cost component in the requested order currency. `markup` is a price or currency-conversion markup applied by etoro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
 type CostBreakdown struct {
-	// CostType Identifies the cost component: `markup` is a price or currency-conversion markup applied by eToro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
+	// CostType Identifies the cost component: `markup` is a price or currency-conversion markup applied by etoro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
 	CostType *CostBreakdownCostType `json:"costType,omitempty"`
 
 	// Currency ISO 4217 currency code in which `value` is denominated.
@@ -5889,7 +5889,7 @@ type CostBreakdown struct {
 	Value *float64 `json:"value,omitempty"`
 }
 
-// CostBreakdownCostType Identifies the cost component: `markup` is a price or currency-conversion markup applied by eToro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
+// CostBreakdownCostType Identifies the cost component: `markup` is a price or currency-conversion markup applied by etoro; `marketSpread` is the market spread included in the execution price; `transactionFee` is a fee charged for executing the trade when applicable; `overnightFee` is a fee for keeping the position open overnight; `overWeekendFee` is a fee for keeping the position open over a weekend; and `sdrt` is the tax charged on eligible settled buy transactions.
 type CostBreakdownCostType string
 
 // Counterparty defines model for Counterparty.
@@ -6197,7 +6197,7 @@ type CustomerRankingResponse struct {
 	Data *RankItem `json:"data,omitempty"`
 }
 
-// DataApiError Error envelope returned by the data platform upstream. Response metadata is not in the body: the correlation id, the request id and the timestamp are returned as the `X-Correlation-Id`, `X-Request-Id` and `X-Timestamp` response headers. Quote `X-Correlation-Id` to eToro support to find the request in logs.
+// DataApiError Error envelope returned by the data platform upstream. Response metadata is not in the body: the correlation id, the request id and the timestamp are returned as the `X-Correlation-Id`, `X-Request-Id` and `X-Timestamp` response headers. Quote `X-Correlation-Id` to etoro support to find the request in logs.
 type DataApiError struct {
 	Error struct {
 		// Code Stable machine-readable error code, UPPER_SNAKE_CASE.
@@ -6397,7 +6397,7 @@ type DiscussionsPost struct {
 		// Example: true
 		IsDirect *bool `json:"isDirect,omitempty"`
 
-		// User eToro user profile (slim projection)
+		// User etoro user profile (slim projection)
 		User *User `json:"user,omitempty"`
 	} `json:"mentions,omitempty"`
 
@@ -6509,7 +6509,7 @@ type DiscussionsPost struct {
 			// Example: Start
 			Type *DiscussionsPostMetadataCopyType `json:"type,omitempty"`
 
-			// User eToro user profile (slim projection)
+			// User etoro user profile (slim projection)
 			User *User `json:"user,omitempty"`
 		} `json:"copy,omitempty"`
 
@@ -6695,7 +6695,7 @@ type DiscussionsPost struct {
 	// Example: 12345
 	ObsoleteId *string `json:"obsoleteId,omitempty"`
 
-	// Owner eToro user profile (slim projection)
+	// Owner etoro user profile (slim projection)
 	Owner *User `json:"owner,omitempty"`
 	Tags  *[]struct {
 		// Market Financial instrument / market
@@ -6844,7 +6844,7 @@ type Emotion struct {
 	// Example: 54321
 	ObsoleteId *string `json:"obsoleteId,omitempty"`
 
-	// Owner eToro user profile (slim projection)
+	// Owner etoro user profile (slim projection)
 	Owner *User `json:"owner,omitempty"`
 
 	// Parent Parent entity reference
@@ -6892,7 +6892,7 @@ type EquityDetailsData struct {
 	// BalanceInFiat Balance converted to fiat (Crypto).
 	BalanceInFiat *float64 `json:"balanceInFiat,omitempty"`
 
-	// CryptoId eToro internal crypto asset identifier (Crypto).
+	// CryptoId etoro internal crypto asset identifier (Crypto).
 	CryptoId *int32 `json:"cryptoId,omitempty"`
 
 	// CurrentPNL Current unrealized profit and loss on open positions (Trading, Plaee).
@@ -7225,7 +7225,7 @@ type GetOrderInfoAsset struct {
 	// Currency The asset's base currency.
 	Currency *string `json:"currency,omitempty"`
 
-	// InstrumentId The eToro instrument identifier.
+	// InstrumentId The etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// Leverage The leverage applied to the order.
@@ -7333,7 +7333,7 @@ type GetOrderInfoResponse struct {
 	// Asset Asset information associated with the order.
 	Asset *GetOrderInfoAsset `json:"asset,omitempty"`
 
-	// EtoroOrderTypeId The internal eToro order type identifier.
+	// EtoroOrderTypeId The internal etoro order type identifier.
 	EtoroOrderTypeId *int32 `json:"etoroOrderTypeId,omitempty"`
 
 	// FrozenAmount The amount frozen/reserved for the order including costs.
@@ -7429,7 +7429,7 @@ type HistoricalAccountData struct {
 	// AccountId Unique identifier of the account.
 	AccountId *string `json:"accountId,omitempty"`
 
-	// AccountType The type of eToro account, as returned in response bodies.
+	// AccountType The type of etoro account, as returned in response bodies.
 	AccountType *BalanceAggregatorApiAccountType `json:"accountType,omitempty"`
 
 	// Cash Cash balance in the account's native currency.
@@ -7781,7 +7781,7 @@ type InstrumentBreakdownAsset struct {
 	// Direction Position/order direction.
 	Direction *InstrumentBreakdownAssetDirection `json:"direction,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// Leverage The leverage multiplier of the requested position.
@@ -7808,7 +7808,7 @@ type InstrumentBreakdownAssetDemo struct {
 	// Direction Position/order direction.
 	Direction *InstrumentBreakdownAssetDemoDirection `json:"direction,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// Leverage The leverage multiplier of the requested position.
@@ -7835,7 +7835,7 @@ type InstrumentBreakdownClosePositionDetail struct {
 	// Direction Position direction.
 	Direction *InstrumentBreakdownClosePositionDetailDirection `json:"direction,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// IsSettled Whether the position contains the real instrument (real*, marginTrade) or not (cfd).
@@ -7850,7 +7850,7 @@ type InstrumentBreakdownClosePositionDetail struct {
 	// OpenTime Time the position was opened (UTC).
 	OpenTime *time.Time `json:"openTime,omitempty"`
 
-	// PositionId eToro position identifier.
+	// PositionId etoro position identifier.
 	PositionId *int64 `json:"positionId,omitempty"`
 
 	// SettlementType Settlement type of the position. `real` — real asset. `cfd` — contract for difference following the PnL of the underlying asset. `realFutures` — real futures contracts. `marginTrade` — holding the real asset on a margin (leverage). `trs` — obsolete. `cmt` — obsolete.
@@ -7877,7 +7877,7 @@ type InstrumentBreakdownClosePositionDetailDemo struct {
 	// Direction Position direction.
 	Direction *InstrumentBreakdownClosePositionDetailDemoDirection `json:"direction,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// IsSettled Whether the position has settled.
@@ -7892,7 +7892,7 @@ type InstrumentBreakdownClosePositionDetailDemo struct {
 	// OpenTime Time the position was opened.
 	OpenTime *time.Time `json:"openTime,omitempty"`
 
-	// PositionId eToro position identifier.
+	// PositionId etoro position identifier.
 	PositionId *int64 `json:"positionId,omitempty"`
 
 	// SettlementType Settlement type of the position.
@@ -7913,7 +7913,7 @@ type InstrumentBreakdownClosePositionDetailDemoSettlementType string
 
 // InstrumentBreakdownInstrument defines model for InstrumentBreakdownInstrument.
 type InstrumentBreakdownInstrument struct {
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// Orders Null when orderLevel=none.
@@ -7928,7 +7928,7 @@ type InstrumentBreakdownInstrument struct {
 
 // InstrumentBreakdownInstrumentDemo defines model for InstrumentBreakdownInstrumentDemo.
 type InstrumentBreakdownInstrumentDemo struct {
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// Orders Null when orderLevel=none.
@@ -7955,7 +7955,7 @@ type InstrumentBreakdownMirrorDemo struct {
 	// Instruments Copy-trading positions/orders held within this mirror, grouped by instrument.
 	Instruments *[]InstrumentBreakdownInstrumentDemo `json:"instruments,omitempty"`
 
-	// MirrorId eToro mirror identifier.
+	// MirrorId etoro mirror identifier.
 	MirrorId *int32 `json:"mirrorId,omitempty"`
 }
 
@@ -7979,7 +7979,7 @@ type InstrumentBreakdownOrder struct {
 	// ClosePositionsIds Position IDs targeted by this close order. Present only for close orders.
 	ClosePositionsIds *[]int64 `json:"closePositionsIds,omitempty"`
 
-	// EToroOrderTypeId Internal eToro order-type code.
+	// EToroOrderTypeId Internal etoro order-type code.
 	EToroOrderTypeId *int32 `json:"eToroOrderTypeId,omitempty"`
 
 	// EstimatedExternalCosts This is the estimated costs of the order in account currency.
@@ -8090,7 +8090,7 @@ type InstrumentBreakdownOrderDemo struct {
 	// ClosePositionsIds Position IDs targeted by this close order. Present only for close orders.
 	ClosePositionsIds *[]int64 `json:"closePositionsIds,omitempty"`
 
-	// EToroOrderTypeId Internal eToro order-type code.
+	// EToroOrderTypeId Internal etoro order-type code.
 	EToroOrderTypeId *int32 `json:"eToroOrderTypeId,omitempty"`
 
 	// EstimatedExternalCosts This is the estimated costs of the order in account currency.
@@ -8117,7 +8117,7 @@ type InstrumentBreakdownOrderDemo struct {
 	// OpenTakeProfitRate Take-profit rate requested on open. Null when no take-profit is set.
 	OpenTakeProfitRate *float32 `json:"openTakeProfitRate,omitempty"`
 
-	// OrderCurrency ISO 4217 code (uppercase) of the currency the order was placed in. Currently always the account's currency (USD), since eToro only supports single-currency accounts today.
+	// OrderCurrency ISO 4217 code (uppercase) of the currency the order was placed in. Currently always the account's currency (USD), since etoro only supports single-currency accounts today.
 	OrderCurrency *string `json:"orderCurrency,omitempty"`
 
 	// OrderId A unique order ID for this order.
@@ -8219,7 +8219,7 @@ type InstrumentBreakdownPosition struct {
 	// FxValueImpact Impact of the currency exchange rate on the position value in Asset Currency. Should be added to the pnl to generate the actual pnl of the position in Asset Currency.
 	FxValueImpact *float32 `json:"fxValueImpact,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// IsSettled Whether the position contains the real instrument (real*, marginTrade) or not (cfd).
@@ -8345,7 +8345,7 @@ type InstrumentBreakdownPositionDemo struct {
 	// FxValueImpact Impact of currency-conversion rate movement on P&L, in account currency.
 	FxValueImpact *float32 `json:"fxValueImpact,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// IsSettled Whether the position has settled.
@@ -8384,7 +8384,7 @@ type InstrumentBreakdownPositionDemo struct {
 	// PnlPercent Unrealized P&L percentage.
 	PnlPercent *float32 `json:"pnlPercent,omitempty"`
 
-	// PositionId eToro position identifier.
+	// PositionId etoro position identifier.
 	PositionId *int64 `json:"positionId,omitempty"`
 
 	// RateTimestamp Time the current rate was captured. Null when unavailable.
@@ -8799,7 +8799,7 @@ type LeverageConfiguration struct {
 
 // ListUserTokensResponse defines model for ListUserTokensResponse.
 type ListUserTokensResponse struct {
-	// UserTokens The user's sub-account user tokens, across all their eToro trading sub-accounts.
+	// UserTokens The user's sub-account user tokens, across all their etoro trading sub-accounts.
 	UserTokens *[]UserTokenItem `json:"userTokens,omitempty"`
 }
 
@@ -8971,7 +8971,7 @@ type MarketEnrichData struct {
 	// Beta Beta relative to the market.
 	Beta *float64 `json:"beta,omitempty"`
 
-	// BuyHoldingPct Share of eToro clients holding a buy position.
+	// BuyHoldingPct Share of etoro clients holding a buy position.
 	BuyHoldingPct *float64 `json:"buyHoldingPct,omitempty"`
 
 	// Candles1D Intraday price candles for the last day.
@@ -9586,7 +9586,7 @@ type PortfolioResponse struct {
 			PendingForClosure *bool `json:"pendingForClosure,omitempty"`
 
 			// Positions Positions within this copy trading mirror
-			Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
+			Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
 
 			// StartedCopyDate Date and time when the mirror trading was initiated
 			StartedCopyDate *time.Time `json:"startedCopyDate,omitempty"`
@@ -9656,7 +9656,7 @@ type PortfolioResponse struct {
 		OrdersForOpen *[]map[string]interface{} `json:"ordersForOpen,omitempty"`
 
 		// Positions List of currently open trading positions
-		Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
+		Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
 
 		// StockOrders Obsolete
 		StockOrders *[]map[string]interface{} `json:"stockOrders,omitempty"`
@@ -9735,7 +9735,7 @@ type Post struct {
 		// Example: true
 		IsDirect *bool `json:"isDirect,omitempty"`
 
-		// User eToro user profile (slim projection)
+		// User etoro user profile (slim projection)
 		User *User `json:"user,omitempty"`
 	} `json:"mentions,omitempty"`
 
@@ -9847,7 +9847,7 @@ type Post struct {
 			// Example: Start
 			Type *PostMetadataCopyType `json:"type,omitempty"`
 
-			// User eToro user profile (slim projection)
+			// User etoro user profile (slim projection)
 			User *User `json:"user,omitempty"`
 		} `json:"copy,omitempty"`
 
@@ -10033,7 +10033,7 @@ type Post struct {
 	// Example: 12345
 	ObsoleteId *string `json:"obsoleteId,omitempty"`
 
-	// Owner eToro user profile (slim projection)
+	// Owner etoro user profile (slim projection)
 	Owner *User `json:"owner,omitempty"`
 	Tags  *[]struct {
 		// Market Financial instrument / market
@@ -10633,7 +10633,7 @@ type SharesResponse struct {
 		// Example: 2025-01-15T10:30:00Z
 		CreatedAt *time.Time `json:"createdAt,omitempty"`
 
-		// Owner eToro user profile (slim projection)
+		// Owner etoro user profile (slim projection)
 		Owner *User `json:"owner,omitempty"`
 
 		// ShareReactionId ID of the share reaction
@@ -10869,7 +10869,7 @@ type StockbackPromoStatus struct {
 	// Example: 50.25
 	CashbackLifetimeUsd *float64 `json:"cashbackLifetimeUsd,omitempty"`
 
-	// CurrentClub The caller's current eToro Club tier.
+	// CurrentClub The caller's current etoro Club tier.
 	//
 	// Example: Silver
 	CurrentClub *string `json:"currentClub,omitempty"`
@@ -11019,7 +11019,7 @@ type TradingDemoAdminApiUnifiedOrderRequest struct {
 	// Contracts The number of contracts to trade, used for real futures instead of units. Mutually exclusive with amount and units. Only accepted when settlementType is realFutures, and must be a whole number greater than 0.
 	Contracts *float64 `json:"contracts,omitempty"`
 
-	// InstrumentId The eToro instrument identifier. For open orders provide exactly one of symbol or instrumentId - providing both is rejected.
+	// InstrumentId The etoro instrument identifier. For open orders provide exactly one of symbol or instrumentId - providing both is rejected.
 	//
 	// Example: 101
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
@@ -11105,6 +11105,114 @@ type TradingDemoAdminApiUnifiedOrderRequestStopLossType string
 // Example: buy
 type TradingDemoAdminApiUnifiedOrderRequestTransaction string
 
+// TradingDemoApiPosition Individual position details
+type TradingDemoApiPosition struct {
+	// CID Customer ID associated with the position
+	CID *int `json:"CID,omitempty"`
+
+	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
+	Amount *float32 `json:"amount,omitempty"`
+
+	// InitialAmountInDollars Initial investment USD amount in the position
+	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
+
+	// InitialUnits Initial invested units in the position
+	InitialUnits *float32 `json:"initialUnits,omitempty"`
+
+	// InstrumentID Identifier of the traded instrument
+	InstrumentID *int `json:"instrumentID,omitempty"`
+
+	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
+	IsBuy *bool `json:"isBuy,omitempty"`
+
+	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
+	IsDetached *bool `json:"isDetached,omitempty"`
+
+	// IsDiscounted Obsolete
+	IsDiscounted *bool `json:"isDiscounted,omitempty"`
+
+	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
+	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
+
+	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
+	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
+
+	// IsPartiallyAltered Indication whether this position was partially closed
+	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
+
+	// IsSettled Obsolete
+	IsSettled *bool `json:"isSettled,omitempty"`
+
+	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
+	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
+
+	// Leverage Leverage multiplier applied to the position
+	Leverage *float32 `json:"leverage,omitempty"`
+
+	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
+	LotCount *float32 `json:"lotCount,omitempty"`
+
+	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
+	MirrorID *int `json:"mirrorID,omitempty"`
+
+	// OpenConversionRate Conversion rate at position opening
+	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
+
+	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
+	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
+
+	// OpenPositionActionType Position open reason
+	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
+
+	// OpenRate Entry price of the position in the instrument's currency
+	OpenRate *float32 `json:"openRate,omitempty"`
+
+	// OrderID Original orderID the position was opened by. Need to match together with orderType
+	OrderID *int `json:"orderID,omitempty"`
+
+	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
+	OrderType *int `json:"orderType,omitempty"`
+
+	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
+	ParentPositionID *int `json:"parentPositionID,omitempty"`
+
+	// PnlVersion Pnl formula used for calculating profit and loss
+	PnlVersion *int `json:"pnlVersion,omitempty"`
+
+	// PositionID Unique identifier for the position
+	PositionID *int `json:"positionID,omitempty"`
+
+	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
+	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
+
+	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
+	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
+
+	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
+	StopLossRate *float32 `json:"stopLossRate,omitempty"`
+
+	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
+	StopLossVersion *int `json:"stopLossVersion,omitempty"`
+
+	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
+	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
+
+	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
+	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
+
+	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
+	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
+
+	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
+	TotalFees *float32 `json:"totalFees,omitempty"`
+
+	// Units Number of units in the position
+	Units *float32 `json:"units,omitempty"`
+
+	// UnitsBaseValueDollars Current units invested value in USD
+	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
+}
+
 // TradingPortfolioDemoApiAggregatedPortfolioAccountTotals Account-level balance and equity totals.
 type TradingPortfolioDemoApiAggregatedPortfolioAccountTotals struct {
 	// AccountAvailableCash Cash available for new trades: accountBalance minus accountFrozenCash.
@@ -11171,7 +11279,7 @@ type TradingPortfolioDemoApiAggregatedPortfolioInstrumentAggregate struct {
 	// Example: -18.42
 	DailyGainAssetCurrency *float64 `json:"dailyGainAssetCurrency,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// LiquidationValueAccountCurrency Current liquidation value in account currency: totalMarginAccountCurrency + accountCurrencyReturn.
@@ -11366,7 +11474,7 @@ type TradingPortfolioRealApiAggregatedPortfolioInstrumentAggregate struct {
 	// Example: -18.42
 	DailyGainAssetCurrency *float64 `json:"dailyGainAssetCurrency,omitempty"`
 
-	// InstrumentId eToro instrument identifier.
+	// InstrumentId etoro instrument identifier.
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
 
 	// LiquidationValueAccountCurrency Current liquidation value in account currency: totalMarginAccountCurrency + accountCurrencyReturn.
@@ -11708,7 +11816,7 @@ type TradingRealAdminApiUnifiedOrderRequest struct {
 	// Contracts The number of contracts to trade, used for real futures instead of units. Mutually exclusive with amount and units. Only accepted when settlementType is realFutures, and must be a whole number greater than 0.
 	Contracts *float64 `json:"contracts,omitempty"`
 
-	// InstrumentId The eToro instrument identifier. For open orders provide exactly one of symbol or instrumentId - providing both is rejected.
+	// InstrumentId The etoro instrument identifier. For open orders provide exactly one of symbol or instrumentId - providing both is rejected.
 	//
 	// Example: 101
 	InstrumentId *int32 `json:"instrumentId,omitempty"`
@@ -11793,114 +11901,6 @@ type TradingRealAdminApiUnifiedOrderRequestStopLossType string
 //
 // Example: buy
 type TradingRealAdminApiUnifiedOrderRequestTransaction string
-
-// TradingRealApiPosition Individual position details
-type TradingRealApiPosition struct {
-	// CID Customer ID associated with the position
-	CID *int `json:"CID,omitempty"`
-
-	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
-	Amount *float32 `json:"amount,omitempty"`
-
-	// InitialAmountInDollars Initial investment USD amount in the position
-	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
-
-	// InitialUnits Initial invested units in the position
-	InitialUnits *float32 `json:"initialUnits,omitempty"`
-
-	// InstrumentID Identifier of the traded instrument
-	InstrumentID *int `json:"instrumentID,omitempty"`
-
-	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
-	IsBuy *bool `json:"isBuy,omitempty"`
-
-	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
-	IsDetached *bool `json:"isDetached,omitempty"`
-
-	// IsDiscounted Obsolete
-	IsDiscounted *bool `json:"isDiscounted,omitempty"`
-
-	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
-	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
-
-	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
-	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
-
-	// IsPartiallyAltered Indication whether this position was partially closed
-	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
-
-	// IsSettled Obsolete
-	IsSettled *bool `json:"isSettled,omitempty"`
-
-	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
-	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
-
-	// Leverage Leverage multiplier applied to the position
-	Leverage *float32 `json:"leverage,omitempty"`
-
-	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
-	LotCount *float32 `json:"lotCount,omitempty"`
-
-	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
-	MirrorID *int `json:"mirrorID,omitempty"`
-
-	// OpenConversionRate Conversion rate at position opening
-	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
-
-	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
-	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
-
-	// OpenPositionActionType Position open reason
-	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
-
-	// OpenRate Entry price of the position in the instrument's currency
-	OpenRate *float32 `json:"openRate,omitempty"`
-
-	// OrderID Original orderID the position was opened by. Need to match together with orderType
-	OrderID *int `json:"orderID,omitempty"`
-
-	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
-	OrderType *int `json:"orderType,omitempty"`
-
-	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
-	ParentPositionID *int `json:"parentPositionID,omitempty"`
-
-	// PnlVersion Pnl formula used for calculating profit and loss
-	PnlVersion *int `json:"pnlVersion,omitempty"`
-
-	// PositionID Unique identifier for the position
-	PositionID *int `json:"positionID,omitempty"`
-
-	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
-	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
-
-	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
-	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
-
-	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
-	StopLossRate *float32 `json:"stopLossRate,omitempty"`
-
-	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
-	StopLossVersion *int `json:"stopLossVersion,omitempty"`
-
-	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
-	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
-
-	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
-	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
-
-	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
-	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
-
-	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
-	TotalFees *float32 `json:"totalFees,omitempty"`
-
-	// Units Number of units in the position
-	Units *float32 `json:"units,omitempty"`
-
-	// UnitsBaseValueDollars Current units invested value in USD
-	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
-}
 
 // TransferAccountRef Account identifier for a transfer participant
 type TransferAccountRef struct {
@@ -12153,7 +12153,7 @@ type UpdateUserTokenV2Request struct {
 	ScopeNames *[]string `json:"scopeNames,omitempty"`
 }
 
-// User eToro user profile (slim projection)
+// User etoro user profile (slim projection)
 type User struct {
 	// Avatar Profile picture URLs
 	Avatar *struct {
@@ -12889,7 +12889,7 @@ type MarketDataResponse struct {
 	Results *[]InstrumentSchema2 `json:"results,omitempty"`
 }
 
-// MeResponse Profile of the authenticated user across eToro account types, including granted OAuth scopes.
+// MeResponse Profile of the authenticated user across etoro account types, including granted OAuth scopes.
 type MeResponse struct {
 	// AvatarUrl Absolute URL of the user's profile avatar image.
 	AvatarUrl *string `json:"avatarUrl,omitempty"`
@@ -12903,7 +12903,7 @@ type MeResponse struct {
 	// FirstName The user's first name.
 	FirstName *string `json:"firstName,omitempty"`
 
-	// Gcid Global Customer ID - the unique identifier for the user across all eToro systems.
+	// Gcid Global Customer ID - the unique identifier for the user across all etoro systems.
 	Gcid int `json:"gcid"`
 
 	// Gender Gender. Possible values: 0 (Unknown), 1 (Male), 2 (Female).
@@ -13950,7 +13950,7 @@ type GetAggregatedPortfolioParams struct {
 	// ConversionMode Determines which conversion to use for non-USD assets when the market is closed. 'Realtime' uses the realtime conversion rate. 'eToroApp' uses the last conversion rate at market close time. Default is 'eToroApp'.
 	ConversionMode *GetAggregatedPortfolioParamsConversionMode `form:"conversionMode,omitempty" json:"conversionMode,omitempty"`
 
-	// InstrumentIds Scope the response to a specific list of assets by their eToro instrument ID. When omitted, all held assets are returned. Does not affect account-level totals.
+	// InstrumentIds Scope the response to a specific list of assets by their etoro instrument ID. When omitted, all held assets are returned. Does not affect account-level totals.
 	InstrumentIds *[]int32 `form:"instrumentIds,omitempty" json:"instrumentIds,omitempty"`
 
 	// MirrorIds Scope copy-trading data to specific relationships by their mirror ID. A mirrorId of 0 refers to positions held directly (not via copy trading). When omitted, all copy-trading relationships are included.
@@ -13983,7 +13983,7 @@ type GetAggregatedPortfolioDemoParams struct {
 	// ConversionMode Determines which conversion to use for non-USD assets when the market is closed. 'Realtime' uses the realtime conversion rate. 'eToroApp' uses the last conversion rate at market close time. Default is 'eToroApp'.
 	ConversionMode *GetAggregatedPortfolioDemoParamsConversionMode `form:"conversionMode,omitempty" json:"conversionMode,omitempty"`
 
-	// InstrumentIds Scope the response to a specific list of assets by their eToro instrument ID. When omitted, all held assets are returned. Does not affect account-level totals.
+	// InstrumentIds Scope the response to a specific list of assets by their etoro instrument ID. When omitted, all held assets are returned. Does not affect account-level totals.
 	InstrumentIds *[]int32 `form:"instrumentIds,omitempty" json:"instrumentIds,omitempty"`
 
 	// MirrorIds Scope copy-trading data to specific relationships by their mirror ID. A mirrorId of 0 refers to positions held directly (not via copy trading). When omitted, all copy-trading relationships are included.
@@ -15407,7 +15407,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one eToro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
+	// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one etoro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
 	//
 	// Corresponds with GET /api/v1/data/instruments/{instrumentId}/candles (the `GetPriceCandles` operationId).
 	GetPriceCandles(ctx context.Context, instrumentId int32, params *GetPriceCandlesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -15419,7 +15419,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one eToro shows internally only, returns an empty `intervals` list, not a 404.
+	// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one etoro shows internally only, returns an empty `intervals` list, not a 404.
 	//
 	// Corresponds with GET /api/v1/data/instruments/{instrumentId}/candles/coverage (the `GetPriceCandleCoverage` operationId).
 	GetPriceCandleCoverage(ctx context.Context, instrumentId int32, params *GetPriceCandleCoverageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -16610,7 +16610,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their eToro trading sub-accounts. The secret token value is never included in list results.
+	// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their etoro trading sub-accounts. The secret token value is never included in list results.
 	//
 	// Corresponds with GET /api/v1/sub-accounts/etoro-trading/user-tokens (the `GetSubAccountUserTokens` operationId).
 	GetSubAccountUserTokens(ctx context.Context, params *GetSubAccountUserTokensParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -16695,7 +16695,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (eToro trading sub-accounts); additional sub-account providers will be added over time.
+	// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (etoro trading sub-accounts); additional sub-account providers will be added over time.
 	//
 	// Corresponds with GET /api/v1/sub-accounts/me/accounts (the `GetMySubAccounts` operationId).
 	GetMySubAccounts(ctx context.Context, params *GetMySubAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -16706,7 +16706,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -16719,7 +16719,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -18731,7 +18731,7 @@ func (c *Client) GetCuratedLists(ctx context.Context, params *GetCuratedListsPar
 //
 // ---
 //
-// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one eToro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
+// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one etoro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
 //
 // Corresponds with GET /api/v1/data/instruments/{instrumentId}/candles (the `GetPriceCandles` operationId).
 func (c *Client) GetPriceCandles(ctx context.Context, instrumentId int32, params *GetPriceCandlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -18753,7 +18753,7 @@ func (c *Client) GetPriceCandles(ctx context.Context, instrumentId int32, params
 //
 // ---
 //
-// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one eToro shows internally only, returns an empty `intervals` list, not a 404.
+// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one etoro shows internally only, returns an empty `intervals` list, not a 404.
 //
 // Corresponds with GET /api/v1/data/instruments/{instrumentId}/candles/coverage (the `GetPriceCandleCoverage` operationId).
 func (c *Client) GetPriceCandleCoverage(ctx context.Context, instrumentId int32, params *GetPriceCandleCoverageParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -20854,7 +20854,7 @@ func (c *Client) CreateSubAccountMoneyTransfer(ctx context.Context, params *Crea
 //
 // ---
 //
-// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their eToro trading sub-accounts. The secret token value is never included in list results.
+// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their etoro trading sub-accounts. The secret token value is never included in list results.
 //
 // Corresponds with GET /api/v1/sub-accounts/etoro-trading/user-tokens (the `GetSubAccountUserTokens` operationId).
 func (c *Client) GetSubAccountUserTokens(ctx context.Context, params *GetSubAccountUserTokensParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -21009,7 +21009,7 @@ func (c *Client) UpdateSubAccountUserToken(ctx context.Context, userTokenId open
 //
 // ---
 //
-// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (eToro trading sub-accounts); additional sub-account providers will be added over time.
+// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (etoro trading sub-accounts); additional sub-account providers will be added over time.
 //
 // Corresponds with GET /api/v1/sub-accounts/me/accounts (the `GetMySubAccounts` operationId).
 func (c *Client) GetMySubAccounts(ctx context.Context, params *GetMySubAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -21030,7 +21030,7 @@ func (c *Client) GetMySubAccounts(ctx context.Context, params *GetMySubAccountsP
 //
 // ---
 //
-// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 //
 // Takes any type of body and a specified content type.
 //
@@ -21053,7 +21053,7 @@ func (c *Client) CreateMySubAccountWithBody(ctx context.Context, params *CreateM
 //
 // ---
 //
-// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -36302,7 +36302,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one eToro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
+	// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one etoro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -36316,7 +36316,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one eToro shows internally only, returns an empty `intervals` list, not a 404.
+	// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one etoro shows internally only, returns an empty `intervals` list, not a 404.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -37621,7 +37621,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their eToro trading sub-accounts. The secret token value is never included in list results.
+	// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their etoro trading sub-accounts. The secret token value is never included in list results.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -37712,7 +37712,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (eToro trading sub-accounts); additional sub-account providers will be added over time.
+	// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (etoro trading sub-accounts); additional sub-account providers will be added over time.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -37725,7 +37725,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -37738,7 +37738,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+	// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -53864,7 +53864,7 @@ func (c *ClientWithResponses) GetCuratedListsWithResponse(ctx context.Context, p
 //
 // ---
 //
-// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one eToro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
+// Full-history OHLC candles for one instrument and interval, from a public view built and kept current by a DataPlatform job. Not user-scoped: identical for every caller for the same instrument and parameters. A range without `from` returns the most recent slice; a slice covers at most 10,080 periods of the interval (7 days of 1m, up to all history for 1d/1w), and a longer range is paged with the keyset `cursor` in `pagination.nextCursor`. An instrument with no data for the interval, or one etoro shows internally only, returns 200 with an empty `results` array, not 404. Call the coverage endpoint first to find a range that has data.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -53884,7 +53884,7 @@ func (c *ClientWithResponses) GetPriceCandlesWithResponse(ctx context.Context, i
 //
 // ---
 //
-// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one eToro shows internally only, returns an empty `intervals` list, not a 404.
+// Returns, per interval, the oldest and newest candle, how many exist, and when the daily load last refreshed them. Call it before requesting candles to pick an interval and a range that has data: history can span more than 15 years, and ranges outside it return empty pages. Not user-scoped. An instrument with no data, or one etoro shows internally only, returns an empty `intervals` list, not a 404.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -55735,7 +55735,7 @@ func (c *ClientWithResponses) CreateSubAccountMoneyTransferWithResponse(ctx cont
 //
 // ---
 //
-// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their eToro trading sub-accounts. The secret token value is never included in list results.
+// Lists all sub-account non-interactive user tokens owned by the authenticated user, across all their etoro trading sub-accounts. The secret token value is never included in list results.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -55868,7 +55868,7 @@ func (c *ClientWithResponses) UpdateSubAccountUserTokenWithResponse(ctx context.
 //
 // ---
 //
-// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (eToro trading sub-accounts); additional sub-account providers will be added over time.
+// Returns the authenticated user's sub-accounts. Currently the supported provider is `etoro-trading` (etoro trading sub-accounts); additional sub-account providers will be added over time.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -55887,7 +55887,7 @@ func (c *ClientWithResponses) GetMySubAccountsWithResponse(ctx context.Context, 
 //
 // ---
 //
-// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -55906,7 +55906,7 @@ func (c *ClientWithResponses) CreateMySubAccountWithBodyWithResponse(ctx context
 //
 // ---
 //
-// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an eToro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
+// Creates a sub-account for the authenticated user with the given provider. Currently the supported provider is `etoro-trading` (creates an etoro trading sub-account); additional sub-account providers will be added over time. For `etoro-trading`, `additionalParams.username` is required.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
