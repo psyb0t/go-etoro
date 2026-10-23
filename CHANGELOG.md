@@ -2,6 +2,13 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.4.0, 2026-10-23
+
+- Regenerated from eToro spec version v1.400.0.
+- WebSocket: `ConnectionAddressTemplate` is removed. Code that uses it must switch to the new per-operation constants.
+- WebSocket: added `ConnectionAuthenticateAddressTemplate`, `ConnectionSubscribeAddressTemplate` and `ConnectionUnsubscribeAddressTemplate`. Each has the value "/ws".
+- The WebSocket source header names v1.400.0. `OperationResponse` and its `OperationResponseOperation` values moved within the generated file, and the message name constants `MessageAuthenticateRequest` and `MessageOperationResponse` changed order. Their values are the same.
+
 ## v0.3.0, 2026-10-22
 
 - Regenerated from eToro spec version v1.399.0.
