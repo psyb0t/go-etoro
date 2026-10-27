@@ -13,7 +13,7 @@ Two generated packages, each driven by its own `gen.go`:
 
 ## Stack
 
-- Go 1.26.9.
+- Go 1.26.10.
 - oapi-codegen (REST) and gen-asyncapi (WebSocket), both pinned as `tool` dependencies in `go.mod`.
 - Runtime: `github.com/oapi-codegen/runtime`, `github.com/psyb0t/gen-asyncapi/asyncapirt`, `github.com/psyb0t/ctxerrors`, `github.com/psyb0t/ctxscope`.
 
