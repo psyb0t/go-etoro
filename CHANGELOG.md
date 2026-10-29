@@ -2,6 +2,17 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.5.0, 2026-10-29
+
+- Regenerated from eToro spec version v1.402.0.
+- REST: the social and feed endpoints are removed. Migration: stop calling these, the spec no longer has them.
+- REST: removed the posts methods on `Client` and `ClientWithResponses`, including `PostPosts`, `GetPostsByPostId`, `PutPostsByPostId`, `DeletePostsByPostId`, `GetPostsByPostIdComments`, `PostPostsByPostIdComments`, and the like, follow, pin, save, share, poll vote and reply methods, each with its `WithBody` and `WithResponse` variants.
+- REST: removed the feed methods `GetFeedsFollowing`, `GetFeedsForYou`, `GetFeedsNews`, `GetFeedsSaved`, `GetFeedsMarketsByMarketId`, `GetFeedsUsersByUserId` and `GetFeedsUsersByUserIdPinned`, and `PostAttachmentsWithBody`.
+- REST: removed the same methods from `ClientInterface` and `ClientWithResponsesInterface`, so code that implements or mocks these interfaces must drop them.
+- REST: removed the types `Attachment`, `Attachments`, `Discussion`, `DiscussionCreateRequest`, `DiscussionUpdateRequest`, `DiscussionsResponse`, `Emotion`, `Market`, `SharesResponse`, `User`, `TradingDemoApiPosition` and `TradingRealAdminApiOrder`, with their enum types and constants such as `MarketAssetType*`, `UserRoles*` and `EmotionType*`.
+- REST: added `Order` and `TradingRealApiPosition`.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the spec version string.
+
 ## v0.4.2, 2026-10-28
 
 - Updated Semgrep in the development image to 1.182.1 and refreshed its locked dependencies. certifi 2026.10.23 drops the emSign root CAs whose intermediate keys were compromised (GHSA-6q48-6c7w-9gw2).
