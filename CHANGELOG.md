@@ -2,6 +2,17 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.6.0, 2026-11-04
+
+- Regenerated from eToro spec version v1.408.0.
+- REST: added `GetStockbackPayments`, `GetStrategyPrompt` and `ListStrategyPrompts` on `Client`, and `GetStockbackPaymentsWithResponse`, `GetStrategyPromptWithResponse` and `ListStrategyPromptsWithResponse` on `ClientWithResponses`. They come with request builders, response parsers, params and response header types such as `GetStockbackPaymentsParams` and `GetStockbackPaymentsResponse`.
+- REST: added the types `StockbackPayment`, `StockbackPaymentsPage`, `StrategyPrompt`, `StrategyPromptCatalog` and `StrategyPromptSummary`.
+- REST: added the same six methods to `ClientInterface` and `ClientWithResponsesInterface`, so code that implements or mocks these interfaces must add them.
+- REST: `TradingRealApiPosition` is removed. The `positions` fields now use the new `TradingDemoApiPosition` type, which has the same fields, so code that names the old type must switch.
+- WebSocket: `ConnectionAuthenticateAddressTemplate`, `ConnectionSubscribeAddressTemplate` and `ConnectionUnsubscribeAddressTemplate` are removed. Code that uses them must switch to the new `ConnectionAddressTemplate`, which has the value "/ws".
+- WebSocket: the source header names v1.408.0, and the doc comment for the candle subscription now says it requires a prior successful `Authenticate`. `OperationResponse` moved within the generated file.
+- `scripts/match-wire-types.sh` now sets each operation's action from its messages. eToro's new spec words operations from the server's side, and without this step the client lost its `Authenticate`, `Subscribe` and `Unsubscribe` requests.
+
 ## v0.5.0, 2026-10-29
 
 - Regenerated from eToro spec version v1.402.0.

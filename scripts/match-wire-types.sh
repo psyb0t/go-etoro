@@ -5,6 +5,12 @@
 # in their own description that every value arrives as a JSON string. Strict
 # decoding of such a field fails on real frames, so in every schema whose
 # description says so, number, integer and boolean properties become strings.
+#
+# eToro also words its operations from the server's side: the client requests
+# (Authenticate, Subscribe, Unsubscribe) are "receive" and the pushes are
+# "send". The generator reads the action from the client's side, so an
+# operation whose messages are requests becomes "send" and every other
+# operation "receive".
 set -euo pipefail
 trap 'on_error "$?" "$LINENO"' ERR
 
@@ -52,7 +58,16 @@ main() {
 	trap "rm -f -- '${tmp}'" EXIT
 
 	jq --arg note "$WIRE_NOTE" '
-		.components.schemas |= map_values(
+		.operations |= map_values(
+			.action = (
+				if any(.messages[]?; ."$ref" | endswith("Request")) then
+					"send"
+				else
+					"receive"
+				end
+			)
+		)
+		| .components.schemas |= map_values(
 			if ((.description // "") | ascii_downcase | contains($note)) then
 				.properties |= map_values(
 					if (.type == "number" or .type == "integer" or .type == "boolean") then

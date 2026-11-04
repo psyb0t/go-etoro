@@ -7719,7 +7719,7 @@ type PortfolioResponse struct {
 			PendingForClosure *bool `json:"pendingForClosure,omitempty"`
 
 			// Positions Positions within this copy trading mirror
-			Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
+			Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
 
 			// StartedCopyDate Date and time when the mirror trading was initiated
 			StartedCopyDate *time.Time `json:"startedCopyDate,omitempty"`
@@ -7789,7 +7789,7 @@ type PortfolioResponse struct {
 		OrdersForOpen *[]map[string]interface{} `json:"ordersForOpen,omitempty"`
 
 		// Positions List of currently open trading positions
-		Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
+		Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
 
 		// StockOrders Obsolete
 		StockOrders *[]map[string]interface{} `json:"stockOrders,omitempty"`
@@ -8532,6 +8532,58 @@ type StatsGainApiError struct {
 // * `AbsTwoYears` – exactly two years before the max date, with no rounding. E.g. 2024-07-15 to 2026-07-15.
 type StatsRankingsApiRankingPeriod string
 
+// StockbackPayment One stockback or cashback payment made to the caller. Every field is nullable: a payment may have no related position or source transaction.
+type StockbackPayment struct {
+	// Channel The reward channel the payment was made through.
+	//
+	// Example: stockback
+	Channel *string `json:"channel,omitempty"`
+
+	// Eom End of the month the payment belongs to.
+	//
+	// Example: 2026-10-31
+	Eom *openapi_types.Date `json:"eom,omitempty"`
+
+	// PaidUsd Amount paid, in USD.
+	//
+	// Example: 12.5
+	PaidUsd *float64 `json:"paidUsd,omitempty"`
+
+	// PaymentDate Date the payment was made.
+	//
+	// Example: 2026-10-01
+	PaymentDate *openapi_types.Date `json:"paymentDate,omitempty"`
+
+	// PositionId Identifier of the trading position the payment relates to. Null when the payment is not tied to a position.
+	//
+	// Example: 9001
+	PositionId *int64 `json:"positionId,omitempty"`
+
+	// SourceTxId Identifier of the source transaction the payment originates from. Null when there is none.
+	//
+	// Example: tx-1
+	SourceTxId *string `json:"sourceTxId,omitempty"`
+
+	// StockName Name of the stock the payment relates to, if any.
+	//
+	// Example: AAPL
+	StockName *string `json:"stockName,omitempty"`
+
+	// TxLabel Label describing the payment transaction.
+	//
+	// Example: Stockback reward
+	TxLabel *string `json:"txLabel,omitempty"`
+}
+
+// StockbackPaymentsPage One page of the caller's stockback payments. The collection is a property of this object rather than a bare top-level array, so further fields can be added without a breaking change.
+type StockbackPaymentsPage struct {
+	// Pagination Offset pagination metadata for a collection response.
+	Pagination PaginationSchema `json:"pagination"`
+
+	// Results Payments for this page, newest payment date first.
+	Results []StockbackPayment `json:"results"`
+}
+
 // StockbackPromoStatus The caller's current StockBack/Cashback promo enrollment and lifetime USD figures. Every field is nullable: a caller not (yet) enrolled in the promo still returns 200 with mostly-null values.
 type StockbackPromoStatus struct {
 	// CashbackLifetimeUsd Lifetime Cashback reward earned, in USD.
@@ -8591,6 +8643,38 @@ type StocksIndustriesResponse struct {
 		IndustryID   *int    `json:"industryID,omitempty"`
 		IndustryName *string `json:"industryName,omitempty"`
 	} `json:"stocksIndustries,omitempty"`
+}
+
+// StrategyPrompt The XML research prompt for one published strategy. A hypothetical template, not a live trading instruction.
+type StrategyPrompt struct {
+	// Id Stable public id.
+	//
+	// Example: 1
+	Id int32 `json:"id"`
+
+	// Prompt XML document another AI can run as a backtest template.
+	//
+	// Example: <?xml version="1.0" encoding="UTF-8"?><strategyPrompt><id>1</id></strategyPrompt>
+	Prompt string `json:"prompt"`
+}
+
+// StrategyPromptCatalog Every published strategy prompt. This is the full catalog, not a page.
+type StrategyPromptCatalog struct {
+	// Results Published prompts, ordered by id. Empty when nothing is published.
+	Results []StrategyPromptSummary `json:"results"`
+}
+
+// StrategyPromptSummary One published strategy prompt, enough to choose which prompt to fetch.
+type StrategyPromptSummary struct {
+	// Id Stable public id.
+	//
+	// Example: 1
+	Id int32 `json:"id"`
+
+	// ShortDescription One-line name of the strategy.
+	//
+	// Example: Time-Series Momentum (TSMOM 12/1)
+	ShortDescription string `json:"shortDescription"`
 }
 
 // StsMetadataFrontApiErrorResponse defines model for StsMetadataFrontApi_ErrorResponse.
@@ -8774,6 +8858,114 @@ type TradingDemoAdminApiUnifiedOrderRequestStopLossType string
 //
 // Example: buy
 type TradingDemoAdminApiUnifiedOrderRequestTransaction string
+
+// TradingDemoApiPosition Individual position details
+type TradingDemoApiPosition struct {
+	// CID Customer ID associated with the position
+	CID *int `json:"CID,omitempty"`
+
+	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
+	Amount *float32 `json:"amount,omitempty"`
+
+	// InitialAmountInDollars Initial investment USD amount in the position
+	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
+
+	// InitialUnits Initial invested units in the position
+	InitialUnits *float32 `json:"initialUnits,omitempty"`
+
+	// InstrumentID Identifier of the traded instrument
+	InstrumentID *int `json:"instrumentID,omitempty"`
+
+	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
+	IsBuy *bool `json:"isBuy,omitempty"`
+
+	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
+	IsDetached *bool `json:"isDetached,omitempty"`
+
+	// IsDiscounted Obsolete
+	IsDiscounted *bool `json:"isDiscounted,omitempty"`
+
+	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
+	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
+
+	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
+	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
+
+	// IsPartiallyAltered Indication whether this position was partially closed
+	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
+
+	// IsSettled Obsolete
+	IsSettled *bool `json:"isSettled,omitempty"`
+
+	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
+	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
+
+	// Leverage Leverage multiplier applied to the position
+	Leverage *float32 `json:"leverage,omitempty"`
+
+	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
+	LotCount *float32 `json:"lotCount,omitempty"`
+
+	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
+	MirrorID *int `json:"mirrorID,omitempty"`
+
+	// OpenConversionRate Conversion rate at position opening
+	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
+
+	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
+	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
+
+	// OpenPositionActionType Position open reason
+	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
+
+	// OpenRate Entry price of the position in the instrument's currency
+	OpenRate *float32 `json:"openRate,omitempty"`
+
+	// OrderID Original orderID the position was opened by. Need to match together with orderType
+	OrderID *int `json:"orderID,omitempty"`
+
+	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
+	OrderType *int `json:"orderType,omitempty"`
+
+	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
+	ParentPositionID *int `json:"parentPositionID,omitempty"`
+
+	// PnlVersion Pnl formula used for calculating profit and loss
+	PnlVersion *int `json:"pnlVersion,omitempty"`
+
+	// PositionID Unique identifier for the position
+	PositionID *int `json:"positionID,omitempty"`
+
+	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
+	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
+
+	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
+	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
+
+	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
+	StopLossRate *float32 `json:"stopLossRate,omitempty"`
+
+	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
+	StopLossVersion *int `json:"stopLossVersion,omitempty"`
+
+	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
+	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
+
+	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
+	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
+
+	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
+	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
+
+	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
+	TotalFees *float32 `json:"totalFees,omitempty"`
+
+	// Units Number of units in the position
+	Units *float32 `json:"units,omitempty"`
+
+	// UnitsBaseValueDollars Current units invested value in USD
+	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
+}
 
 // TradingPortfolioDemoApiAggregatedPortfolioAccountTotals Account-level balance and equity totals.
 type TradingPortfolioDemoApiAggregatedPortfolioAccountTotals struct {
@@ -9412,114 +9604,6 @@ type TradingRealAdminApiUnifiedOrderRequestStopLossType string
 //
 // Example: buy
 type TradingRealAdminApiUnifiedOrderRequestTransaction string
-
-// TradingRealApiPosition Individual position details
-type TradingRealApiPosition struct {
-	// CID Customer ID associated with the position
-	CID *int `json:"CID,omitempty"`
-
-	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
-	Amount *float32 `json:"amount,omitempty"`
-
-	// InitialAmountInDollars Initial investment USD amount in the position
-	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
-
-	// InitialUnits Initial invested units in the position
-	InitialUnits *float32 `json:"initialUnits,omitempty"`
-
-	// InstrumentID Identifier of the traded instrument
-	InstrumentID *int `json:"instrumentID,omitempty"`
-
-	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
-	IsBuy *bool `json:"isBuy,omitempty"`
-
-	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
-	IsDetached *bool `json:"isDetached,omitempty"`
-
-	// IsDiscounted Obsolete
-	IsDiscounted *bool `json:"isDiscounted,omitempty"`
-
-	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
-	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
-
-	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
-	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
-
-	// IsPartiallyAltered Indication whether this position was partially closed
-	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
-
-	// IsSettled Obsolete
-	IsSettled *bool `json:"isSettled,omitempty"`
-
-	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
-	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
-
-	// Leverage Leverage multiplier applied to the position
-	Leverage *float32 `json:"leverage,omitempty"`
-
-	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
-	LotCount *float32 `json:"lotCount,omitempty"`
-
-	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
-	MirrorID *int `json:"mirrorID,omitempty"`
-
-	// OpenConversionRate Conversion rate at position opening
-	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
-
-	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
-	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
-
-	// OpenPositionActionType Position open reason
-	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
-
-	// OpenRate Entry price of the position in the instrument's currency
-	OpenRate *float32 `json:"openRate,omitempty"`
-
-	// OrderID Original orderID the position was opened by. Need to match together with orderType
-	OrderID *int `json:"orderID,omitempty"`
-
-	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
-	OrderType *int `json:"orderType,omitempty"`
-
-	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
-	ParentPositionID *int `json:"parentPositionID,omitempty"`
-
-	// PnlVersion Pnl formula used for calculating profit and loss
-	PnlVersion *int `json:"pnlVersion,omitempty"`
-
-	// PositionID Unique identifier for the position
-	PositionID *int `json:"positionID,omitempty"`
-
-	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
-	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
-
-	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
-	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
-
-	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
-	StopLossRate *float32 `json:"stopLossRate,omitempty"`
-
-	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
-	StopLossVersion *int `json:"stopLossVersion,omitempty"`
-
-	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
-	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
-
-	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
-	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
-
-	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
-	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
-
-	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
-	TotalFees *float32 `json:"totalFees,omitempty"`
-
-	// Units Number of units in the position
-	Units *float32 `json:"units,omitempty"`
-
-	// UnitsBaseValueDollars Current units invested value in USD
-	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
-}
 
 // TransferAccountRef Account identifier for a transfer participant
 type TransferAccountRef struct {
@@ -10706,8 +10790,32 @@ type GetClosedPositionEventsHistoryParams struct {
 	XRequestId openapi_types.UUID `json:"x-request-id"`
 }
 
+// GetStockbackPaymentsParams defines parameters for GetStockbackPayments.
+type GetStockbackPaymentsParams struct {
+	// Page 1-based page number to return.
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize Items per page. Defaults to 50, maximum 500.
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// XRequestId A unique request identifier.
+	XRequestId openapi_types.UUID `json:"x-request-id"`
+}
+
 // GetStockbackPromoStatusParams defines parameters for GetStockbackPromoStatus.
 type GetStockbackPromoStatusParams struct {
+	// XRequestId A unique request identifier.
+	XRequestId openapi_types.UUID `json:"x-request-id"`
+}
+
+// ListStrategyPromptsParams defines parameters for ListStrategyPrompts.
+type ListStrategyPromptsParams struct {
+	// XRequestId A unique request identifier.
+	XRequestId openapi_types.UUID `json:"x-request-id"`
+}
+
+// GetStrategyPromptParams defines parameters for GetStrategyPrompt.
+type GetStrategyPromptParams struct {
 	// XRequestId A unique request identifier.
 	XRequestId openapi_types.UUID `json:"x-request-id"`
 }
@@ -12546,6 +12654,23 @@ type ClientInterface interface {
 	// Corresponds with GET /api/v1/data/positions/closed-events/history (the `GetClosedPositionEventsHistory` operationId).
 	GetClosedPositionEventsHistory(ctx context.Context, params *GetClosedPositionEventsHistoryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetStockbackPayments Get Stockback Payments
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Retrieves information about the rewards given to the calling user as part of the 4% Card Promo stock-back promotion. The data is returned as a list of individual reward events, each with the date the reward was given, the stock name, and the amount in USD.
+	//
+	// Rewards fall into two types:
+	// - **Stock reward (airdrop)** — stock deposited directly into the user's account
+	// - **Cash reward** — paid when the user is unable to receive a stock airdrop, or in case the user is a Popular Investor (PI)
+	//
+	// This is user-scoped: the caller is identified by their own gateway-issued GCID, not a path or query parameter, so it always answers for 'me'. Results are returned under `results` with a `pagination` block; a customer with no payments returns 200 with an empty `results` array, not 404.
+	//
+	// Corresponds with GET /api/v1/data/stockback/payments (the `GetStockbackPayments` operationId).
+	GetStockbackPayments(ctx context.Context, params *GetStockbackPaymentsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetStockbackPromoStatus Get the caller's StockBack/Cashback promo status
 	//
 	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
@@ -12556,6 +12681,28 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v1/data/stockback/promo-status (the `GetStockbackPromoStatus` operationId).
 	GetStockbackPromoStatus(ctx context.Context, params *GetStockbackPromoStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListStrategyPrompts List published strategy prompts
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Returns every strategy prompt approved for publication, as an integer id and a one-line description, ordered by id. Call this first, then fetch one id to get the XML prompt another AI should run. Draft and in-review strategies are omitted. An empty results array means nothing is published yet, not an error. These are hypothetical research templates, not live trading instructions or investment advice. Not user-scoped: the same catalog for every caller.
+	//
+	// Corresponds with GET /api/v1/data/strategy-prompts (the `ListStrategyPrompts` operationId).
+	ListStrategyPrompts(ctx context.Context, params *ListStrategyPromptsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetStrategyPrompt Get one published strategy prompt
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Returns the XML research prompt for one published strategy, for another AI to run as a hypothetical backtest template. It is not a live trading instruction and not investment advice. Take the id from the catalog. An unknown id, or a strategy that is not published, returns 404. Not user-scoped.
+	//
+	// Corresponds with GET /api/v1/data/strategy-prompts/{id} (the `GetStrategyPrompt` operationId).
+	GetStrategyPrompt(ctx context.Context, id int32, params *GetStrategyPromptParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetImpressionsTopassetsUserByGcid Get top assets for a user
 	//
@@ -15250,6 +15397,33 @@ func (c *Client) GetClosedPositionEventsHistory(ctx context.Context, params *Get
 	return c.Client.Do(req)
 }
 
+// GetStockbackPayments Get Stockback Payments
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Retrieves information about the rewards given to the calling user as part of the 4% Card Promo stock-back promotion. The data is returned as a list of individual reward events, each with the date the reward was given, the stock name, and the amount in USD.
+//
+// Rewards fall into two types:
+// - **Stock reward (airdrop)** — stock deposited directly into the user's account
+// - **Cash reward** — paid when the user is unable to receive a stock airdrop, or in case the user is a Popular Investor (PI)
+//
+// This is user-scoped: the caller is identified by their own gateway-issued GCID, not a path or query parameter, so it always answers for 'me'. Results are returned under `results` with a `pagination` block; a customer with no payments returns 200 with an empty `results` array, not 404.
+//
+// Corresponds with GET /api/v1/data/stockback/payments (the `GetStockbackPayments` operationId).
+func (c *Client) GetStockbackPayments(ctx context.Context, params *GetStockbackPaymentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetStockbackPaymentsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetStockbackPromoStatus Get the caller's StockBack/Cashback promo status
 //
 // **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
@@ -15261,6 +15435,48 @@ func (c *Client) GetClosedPositionEventsHistory(ctx context.Context, params *Get
 // Corresponds with GET /api/v1/data/stockback/promo-status (the `GetStockbackPromoStatus` operationId).
 func (c *Client) GetStockbackPromoStatus(ctx context.Context, params *GetStockbackPromoStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetStockbackPromoStatusRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListStrategyPrompts List published strategy prompts
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Returns every strategy prompt approved for publication, as an integer id and a one-line description, ordered by id. Call this first, then fetch one id to get the XML prompt another AI should run. Draft and in-review strategies are omitted. An empty results array means nothing is published yet, not an error. These are hypothetical research templates, not live trading instructions or investment advice. Not user-scoped: the same catalog for every caller.
+//
+// Corresponds with GET /api/v1/data/strategy-prompts (the `ListStrategyPrompts` operationId).
+func (c *Client) ListStrategyPrompts(ctx context.Context, params *ListStrategyPromptsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListStrategyPromptsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetStrategyPrompt Get one published strategy prompt
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Returns the XML research prompt for one published strategy, for another AI to run as a hypothetical backtest template. It is not a live trading instruction and not investment advice. Take the id from the catalog. An unknown id, or a strategy that is not published, returns 404. Not user-scoped.
+//
+// Corresponds with GET /api/v1/data/strategy-prompts/{id} (the `GetStrategyPrompt` operationId).
+func (c *Client) GetStrategyPrompt(ctx context.Context, id int32, params *GetStrategyPromptParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetStrategyPromptRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -20474,6 +20690,85 @@ func NewGetClosedPositionEventsHistoryRequest(server string, params *GetClosedPo
 	return req, nil
 }
 
+// NewGetStockbackPaymentsRequest constructs an http.Request for the GetStockbackPayments method
+func NewGetStockbackPaymentsRequest(server string, params *GetStockbackPaymentsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data/stockback/payments")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "pageSize", *params.PageSize, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "x-request-id", params.XRequestId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("x-request-id", headerParam0)
+
+	}
+
+	return req, nil
+}
+
 // NewGetStockbackPromoStatusRequest constructs an http.Request for the GetStockbackPromoStatus method
 func NewGetStockbackPromoStatusRequest(server string, params *GetStockbackPromoStatusParams) (*http.Request, error) {
 	var err error
@@ -20484,6 +20779,93 @@ func NewGetStockbackPromoStatusRequest(server string, params *GetStockbackPromoS
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/data/stockback/promo-status")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "x-request-id", params.XRequestId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("x-request-id", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewListStrategyPromptsRequest constructs an http.Request for the ListStrategyPrompts method
+func NewListStrategyPromptsRequest(server string, params *ListStrategyPromptsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data/strategy-prompts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		var headerParam0 string
+
+		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "x-request-id", params.XRequestId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: "uuid"})
+		if err != nil {
+			return nil, err
+		}
+
+		req.Header.Set("x-request-id", headerParam0)
+
+	}
+
+	return req, nil
+}
+
+// NewGetStrategyPromptRequest constructs an http.Request for the GetStrategyPrompt method
+func NewGetStrategyPromptRequest(server string, id int32, params *GetStrategyPromptParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: "int32"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data/strategy-prompts/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -29035,6 +29417,25 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /api/v1/data/positions/closed-events/history (the `GetClosedPositionEventsHistory` operationId).
 	GetClosedPositionEventsHistoryWithResponse(ctx context.Context, params *GetClosedPositionEventsHistoryParams, reqEditors ...RequestEditorFn) (*GetClosedPositionEventsHistoryResponse, error)
 
+	// GetStockbackPaymentsWithResponse Get Stockback Payments
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Retrieves information about the rewards given to the calling user as part of the 4% Card Promo stock-back promotion. The data is returned as a list of individual reward events, each with the date the reward was given, the stock name, and the amount in USD.
+	//
+	// Rewards fall into two types:
+	// - **Stock reward (airdrop)** — stock deposited directly into the user's account
+	// - **Cash reward** — paid when the user is unable to receive a stock airdrop, or in case the user is a Popular Investor (PI)
+	//
+	// This is user-scoped: the caller is identified by their own gateway-issued GCID, not a path or query parameter, so it always answers for 'me'. Results are returned under `results` with a `pagination` block; a customer with no payments returns 200 with an empty `results` array, not 404.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/data/stockback/payments (the `GetStockbackPayments` operationId).
+	GetStockbackPaymentsWithResponse(ctx context.Context, params *GetStockbackPaymentsParams, reqEditors ...RequestEditorFn) (*GetStockbackPaymentsResponse, error)
+
 	// GetStockbackPromoStatusWithResponse Get the caller's StockBack/Cashback promo status
 	//
 	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
@@ -29047,6 +29448,32 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v1/data/stockback/promo-status (the `GetStockbackPromoStatus` operationId).
 	GetStockbackPromoStatusWithResponse(ctx context.Context, params *GetStockbackPromoStatusParams, reqEditors ...RequestEditorFn) (*GetStockbackPromoStatusResponse, error)
+
+	// ListStrategyPromptsWithResponse List published strategy prompts
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Returns every strategy prompt approved for publication, as an integer id and a one-line description, ordered by id. Call this first, then fetch one id to get the XML prompt another AI should run. Draft and in-review strategies are omitted. An empty results array means nothing is published yet, not an error. These are hypothetical research templates, not live trading instructions or investment advice. Not user-scoped: the same catalog for every caller.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/data/strategy-prompts (the `ListStrategyPrompts` operationId).
+	ListStrategyPromptsWithResponse(ctx context.Context, params *ListStrategyPromptsParams, reqEditors ...RequestEditorFn) (*ListStrategyPromptsResponse, error)
+
+	// GetStrategyPromptWithResponse Get one published strategy prompt
+	//
+	// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+	//
+	// ---
+	//
+	// Returns the XML research prompt for one published strategy, for another AI to run as a hypothetical backtest template. It is not a live trading instruction and not investment advice. Take the id from the catalog. An unknown id, or a strategy that is not published, returns 404. Not user-scoped.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/data/strategy-prompts/{id} (the `GetStrategyPrompt` operationId).
+	GetStrategyPromptWithResponse(ctx context.Context, id int32, params *GetStrategyPromptParams, reqEditors ...RequestEditorFn) (*GetStrategyPromptResponse, error)
 
 	// GetImpressionsTopassetsUserByGcidWithResponse Get top assets for a user
 	//
@@ -32918,6 +33345,123 @@ func (r GetClosedPositionEventsHistoryResponse) ContentType() string {
 	return ""
 }
 
+// GetStockbackPaymentsResponse200Headers the declared response headers of an HTTP 200 response for GetStockbackPayments
+type GetStockbackPaymentsResponse200Headers struct {
+	CacheControl       *string
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+	XCorrelationId     *openapi_types.UUID
+	XRequestId         *openapi_types.UUID
+	XTimestamp         *time.Time
+}
+
+// GetStockbackPaymentsResponse400Headers the declared response headers of an HTTP 400 response for GetStockbackPayments
+type GetStockbackPaymentsResponse400Headers struct {
+	CacheControl   *string
+	XCorrelationId *openapi_types.UUID
+	XRequestId     *openapi_types.UUID
+	XTimestamp     *time.Time
+}
+
+// GetStockbackPaymentsResponse401Headers the declared response headers of an HTTP 401 response for GetStockbackPayments
+type GetStockbackPaymentsResponse401Headers struct {
+	CacheControl   *string
+	XCorrelationId *openapi_types.UUID
+	XRequestId     *openapi_types.UUID
+	XTimestamp     *time.Time
+}
+
+// GetStockbackPaymentsResponse429Headers the declared response headers of an HTTP 429 response for GetStockbackPayments
+type GetStockbackPaymentsResponse429Headers struct {
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+	RetryAfter         *int
+}
+
+// GetStockbackPaymentsResponse503Headers the declared response headers of an HTTP 503 response for GetStockbackPayments
+type GetStockbackPaymentsResponse503Headers struct {
+	CacheControl   *string
+	XCorrelationId *openapi_types.UUID
+	XRequestId     *openapi_types.UUID
+	XTimestamp     *time.Time
+}
+
+type GetStockbackPaymentsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *StockbackPaymentsPage
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DataApiError
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *DataApiError
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *DataApiError
+	// Headers200 the parsed response headers for an HTTP 200 response
+	Headers200 *GetStockbackPaymentsResponse200Headers
+	// Headers400 the parsed response headers for an HTTP 400 response
+	Headers400 *GetStockbackPaymentsResponse400Headers
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetStockbackPaymentsResponse401Headers
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *GetStockbackPaymentsResponse429Headers
+	// Headers503 the parsed response headers for an HTTP 503 response
+	Headers503 *GetStockbackPaymentsResponse503Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetStockbackPaymentsResponse) GetJSON200() *StockbackPaymentsPage {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetStockbackPaymentsResponse) GetJSON400() *DataApiError {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetStockbackPaymentsResponse) GetJSON401() *DataApiError {
+	return r.JSON401
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetStockbackPaymentsResponse) GetJSON503() *DataApiError {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetStockbackPaymentsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetStockbackPaymentsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetStockbackPaymentsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetStockbackPaymentsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetStockbackPromoStatusResponse200Headers the declared response headers of an HTTP 200 response for GetStockbackPromoStatus
 type GetStockbackPromoStatusResponse200Headers struct {
 	CacheControl       *string
@@ -33046,6 +33590,174 @@ func (r GetStockbackPromoStatusResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetStockbackPromoStatusResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListStrategyPromptsResponse200Headers the declared response headers of an HTTP 200 response for ListStrategyPrompts
+type ListStrategyPromptsResponse200Headers struct {
+	CacheControl       *string
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+}
+
+// ListStrategyPromptsResponse429Headers the declared response headers of an HTTP 429 response for ListStrategyPrompts
+type ListStrategyPromptsResponse429Headers struct {
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+	RetryAfter         *int
+}
+
+// ListStrategyPromptsResponse503Headers the declared response headers of an HTTP 503 response for ListStrategyPrompts
+type ListStrategyPromptsResponse503Headers struct {
+	CacheControl *string
+}
+
+type ListStrategyPromptsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *StrategyPromptCatalog
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *DataApiError
+	// Headers200 the parsed response headers for an HTTP 200 response
+	Headers200 *ListStrategyPromptsResponse200Headers
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *ListStrategyPromptsResponse429Headers
+	// Headers503 the parsed response headers for an HTTP 503 response
+	Headers503 *ListStrategyPromptsResponse503Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListStrategyPromptsResponse) GetJSON200() *StrategyPromptCatalog {
+	return r.JSON200
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r ListStrategyPromptsResponse) GetJSON503() *DataApiError {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r ListStrategyPromptsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListStrategyPromptsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListStrategyPromptsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListStrategyPromptsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetStrategyPromptResponse200Headers the declared response headers of an HTTP 200 response for GetStrategyPrompt
+type GetStrategyPromptResponse200Headers struct {
+	CacheControl       *string
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+}
+
+// GetStrategyPromptResponse429Headers the declared response headers of an HTTP 429 response for GetStrategyPrompt
+type GetStrategyPromptResponse429Headers struct {
+	RateLimitLimit     *int
+	RateLimitPolicy    *string
+	RateLimitRemaining *int
+	RateLimitReset     *int
+	RetryAfter         *int
+}
+
+type GetStrategyPromptResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *StrategyPrompt
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *DataApiError
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *DataApiError
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *DataApiError
+	// JSON503 the response for an HTTP 503 `application/json` response
+	JSON503 *DataApiError
+	// Headers200 the parsed response headers for an HTTP 200 response
+	Headers200 *GetStrategyPromptResponse200Headers
+	// Headers429 the parsed response headers for an HTTP 429 response
+	Headers429 *GetStrategyPromptResponse429Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetStrategyPromptResponse) GetJSON200() *StrategyPrompt {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetStrategyPromptResponse) GetJSON400() *DataApiError {
+	return r.JSON400
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetStrategyPromptResponse) GetJSON404() *DataApiError {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetStrategyPromptResponse) GetJSON500() *DataApiError {
+	return r.JSON500
+}
+
+// GetJSON503 returns the response for an HTTP 503 `application/json` response
+func (r GetStrategyPromptResponse) GetJSON503() *DataApiError {
+	return r.JSON503
+}
+
+// GetBody returns the raw response body bytes
+func (r GetStrategyPromptResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetStrategyPromptResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetStrategyPromptResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetStrategyPromptResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -43744,6 +44456,31 @@ func (c *ClientWithResponses) GetClosedPositionEventsHistoryWithResponse(ctx con
 	return ParseGetClosedPositionEventsHistoryResponse(rsp)
 }
 
+// GetStockbackPaymentsWithResponse Get Stockback Payments
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Retrieves information about the rewards given to the calling user as part of the 4% Card Promo stock-back promotion. The data is returned as a list of individual reward events, each with the date the reward was given, the stock name, and the amount in USD.
+//
+// Rewards fall into two types:
+// - **Stock reward (airdrop)** — stock deposited directly into the user's account
+// - **Cash reward** — paid when the user is unable to receive a stock airdrop, or in case the user is a Popular Investor (PI)
+//
+// This is user-scoped: the caller is identified by their own gateway-issued GCID, not a path or query parameter, so it always answers for 'me'. Results are returned under `results` with a `pagination` block; a customer with no payments returns 200 with an empty `results` array, not 404.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/data/stockback/payments (the `GetStockbackPayments` operationId).
+func (c *ClientWithResponses) GetStockbackPaymentsWithResponse(ctx context.Context, params *GetStockbackPaymentsParams, reqEditors ...RequestEditorFn) (*GetStockbackPaymentsResponse, error) {
+	rsp, err := c.GetStockbackPayments(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetStockbackPaymentsResponse(rsp)
+}
+
 // GetStockbackPromoStatusWithResponse Get the caller's StockBack/Cashback promo status
 //
 // **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
@@ -43761,6 +44498,44 @@ func (c *ClientWithResponses) GetStockbackPromoStatusWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetStockbackPromoStatusResponse(rsp)
+}
+
+// ListStrategyPromptsWithResponse List published strategy prompts
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Returns every strategy prompt approved for publication, as an integer id and a one-line description, ordered by id. Call this first, then fetch one id to get the XML prompt another AI should run. Draft and in-review strategies are omitted. An empty results array means nothing is published yet, not an error. These are hypothetical research templates, not live trading instructions or investment advice. Not user-scoped: the same catalog for every caller.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/data/strategy-prompts (the `ListStrategyPrompts` operationId).
+func (c *ClientWithResponses) ListStrategyPromptsWithResponse(ctx context.Context, params *ListStrategyPromptsParams, reqEditors ...RequestEditorFn) (*ListStrategyPromptsResponse, error) {
+	rsp, err := c.ListStrategyPrompts(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListStrategyPromptsResponse(rsp)
+}
+
+// GetStrategyPromptWithResponse Get one published strategy prompt
+//
+// **Rate limit:** 60 requests per 60 seconds. This is the **default shared quota** — it is shared with every other endpoint that has no dedicated limit, so requests across those endpoints all draw from the same budget.
+//
+// ---
+//
+// Returns the XML research prompt for one published strategy, for another AI to run as a hypothetical backtest template. It is not a live trading instruction and not investment advice. Take the id from the catalog. An unknown id, or a strategy that is not published, returns 404. Not user-scoped.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/data/strategy-prompts/{id} (the `GetStrategyPrompt` operationId).
+func (c *ClientWithResponses) GetStrategyPromptWithResponse(ctx context.Context, id int32, params *GetStrategyPromptParams, reqEditors ...RequestEditorFn) (*GetStrategyPromptResponse, error) {
+	rsp, err := c.GetStrategyPrompt(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetStrategyPromptResponse(rsp)
 }
 
 // GetImpressionsTopassetsUserByGcidWithResponse Get top assets for a user
@@ -49414,6 +50189,249 @@ func ParseGetClosedPositionEventsHistoryResponse(rsp *http.Response) (*GetClosed
 	return response, nil
 }
 
+// ParseGetStockbackPaymentsResponse parses an HTTP response from a GetStockbackPaymentsWithResponse call
+func ParseGetStockbackPaymentsResponse(rsp *http.Response) (*GetStockbackPaymentsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetStockbackPaymentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StockbackPaymentsPage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case rsp.StatusCode == 429:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		var headers GetStockbackPaymentsResponse200Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		if values := rsp.Header.Values("X-Correlation-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Correlation-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XCorrelationId = &value
+		}
+		if values := rsp.Header.Values("X-Request-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Request-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XRequestId = &value
+		}
+		if values := rsp.Header.Values("X-Timestamp"); len(values) > 0 {
+			var value time.Time
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Timestamp", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			}
+			headers.XTimestamp = &value
+		}
+		response.Headers200 = &headers
+	case rsp.StatusCode == 400:
+		var headers GetStockbackPaymentsResponse400Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("X-Correlation-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Correlation-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XCorrelationId = &value
+		}
+		if values := rsp.Header.Values("X-Request-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Request-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XRequestId = &value
+		}
+		if values := rsp.Header.Values("X-Timestamp"); len(values) > 0 {
+			var value time.Time
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Timestamp", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			}
+			headers.XTimestamp = &value
+		}
+		response.Headers400 = &headers
+	case rsp.StatusCode == 401:
+		var headers GetStockbackPaymentsResponse401Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("X-Correlation-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Correlation-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XCorrelationId = &value
+		}
+		if values := rsp.Header.Values("X-Request-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Request-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XRequestId = &value
+		}
+		if values := rsp.Header.Values("X-Timestamp"); len(values) > 0 {
+			var value time.Time
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Timestamp", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			}
+			headers.XTimestamp = &value
+		}
+		response.Headers401 = &headers
+	case rsp.StatusCode == 429:
+		var headers GetStockbackPaymentsResponse429Headers
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		response.Headers429 = &headers
+	case rsp.StatusCode == 503:
+		var headers GetStockbackPaymentsResponse503Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("X-Correlation-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Correlation-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XCorrelationId = &value
+		}
+		if values := rsp.Header.Values("X-Request-Id"); len(values) > 0 {
+			var value openapi_types.UUID
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Request-Id", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			}
+			headers.XRequestId = &value
+		}
+		if values := rsp.Header.Values("X-Timestamp"); len(values) > 0 {
+			var value time.Time
+			if err := runtime.BindStyledParameterWithOptions("simple", "X-Timestamp", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			}
+			headers.XTimestamp = &value
+		}
+		response.Headers503 = &headers
+	}
+
+	return response, nil
+}
+
 // ParseGetStockbackPromoStatusResponse parses an HTTP response from a GetStockbackPromoStatusWithResponse call
 func ParseGetStockbackPromoStatusResponse(rsp *http.Response) (*GetStockbackPromoStatusResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -49690,6 +50708,267 @@ func ParseGetStockbackPromoStatusResponse(rsp *http.Response) (*GetStockbackProm
 			headers.XTimestamp = &value
 		}
 		response.Headers503 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListStrategyPromptsResponse parses an HTTP response from a ListStrategyPromptsWithResponse call
+func ParseListStrategyPromptsResponse(rsp *http.Response) (*ListStrategyPromptsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListStrategyPromptsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StrategyPromptCatalog
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case rsp.StatusCode == 429:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		var headers ListStrategyPromptsResponse200Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		response.Headers200 = &headers
+	case rsp.StatusCode == 429:
+		var headers ListStrategyPromptsResponse429Headers
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		response.Headers429 = &headers
+	case rsp.StatusCode == 503:
+		var headers ListStrategyPromptsResponse503Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		response.Headers503 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetStrategyPromptResponse parses an HTTP response from a GetStrategyPromptWithResponse call
+func ParseGetStrategyPromptResponse(rsp *http.Response) (*GetStrategyPromptResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetStrategyPromptResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest StrategyPrompt
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case rsp.StatusCode == 429:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest DataApiError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		var headers GetStrategyPromptResponse200Headers
+		if values := rsp.Header.Values("Cache-Control"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "Cache-Control", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.CacheControl = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		response.Headers200 = &headers
+	case rsp.StatusCode == 429:
+		var headers GetStrategyPromptResponse429Headers
+		if values := rsp.Header.Values("RateLimit-Limit"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Limit", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitLimit = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Policy"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Policy", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitPolicy = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Remaining"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Remaining", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitRemaining = &value
+		}
+		if values := rsp.Header.Values("RateLimit-Reset"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "RateLimit-Reset", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RateLimitReset = &value
+		}
+		if values := rsp.Header.Values("Retry-After"); len(values) > 0 {
+			var value int
+			if err := runtime.BindStyledParameterWithOptions("simple", "Retry-After", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.RetryAfter = &value
+		}
+		response.Headers429 = &headers
 	}
 
 	return response, nil
