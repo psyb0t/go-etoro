@@ -2,6 +2,13 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.6.2, 2026-11-06
+
+- Regenerated from eToro spec version v1.413.0.
+- REST: `CreateApplicationsResponse` has a new field `JSON409` and a new method `GetJSON409`. `ParseCreateApplicationsResponse` fills `JSON409` for a 409 JSON response.
+- REST: the doc comments for `GetScopes` now say that scopes reserved for partner applications are not listed, and that create and update reject them with `400`.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the source header, which now names v1.413.0. No exported API changes.
+
 ## v0.6.1, 2026-11-05
 
 - Regenerated from eToro spec version v1.410.0.

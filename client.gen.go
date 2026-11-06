@@ -13204,7 +13204,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update.
+	// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update. Scopes reserved for partner applications are not listed, and create/update reject them with `400`.
 	//
 	// Corresponds with GET /api/v1/sso/scopes (the `GetScopes` operationId).
 	GetScopes(ctx context.Context, params *GetScopesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -16367,7 +16367,7 @@ func (c *Client) RotateApplicationsClientSecretByClientId(ctx context.Context, c
 //
 // ---
 //
-// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update.
+// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update. Scopes reserved for partner applications are not listed, and create/update reject them with `400`.
 //
 // Corresponds with GET /api/v1/sso/scopes (the `GetScopes` operationId).
 func (c *Client) GetScopes(ctx context.Context, params *GetScopesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -30031,7 +30031,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update.
+	// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update. Scopes reserved for partner applications are not listed, and create/update reject them with `400`.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -35801,6 +35801,8 @@ type CreateApplicationsResponse struct {
 	JSON400 *StsMetadataFrontApiErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *StsMetadataFrontApiErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *StsMetadataFrontApiErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *StsMetadataFrontApiErrorResponse
 	// Headers201 the parsed response headers for an HTTP 201 response
@@ -35822,6 +35824,11 @@ func (r CreateApplicationsResponse) GetJSON400() *StsMetadataFrontApiErrorRespon
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CreateApplicationsResponse) GetJSON403() *StsMetadataFrontApiErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateApplicationsResponse) GetJSON409() *StsMetadataFrontApiErrorResponse {
+	return r.JSON409
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -45322,7 +45329,7 @@ func (c *ClientWithResponses) RotateApplicationsClientSecretByClientIdWithRespon
 //
 // ---
 //
-// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update.
+// Returns the public catalog of OAuth scopes that can be requested when creating or updating an application. Use this endpoint to render scope pickers and to validate scope ids client-side before calling create/update. Scopes reserved for partner applications are not listed, and create/update reject them with `400`.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -54267,6 +54274,13 @@ func ParseCreateApplicationsResponse(rsp *http.Response) (*CreateApplicationsRes
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest StsMetadataFrontApiErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest StsMetadataFrontApiErrorResponse
