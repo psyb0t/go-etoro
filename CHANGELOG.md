@@ -2,6 +2,12 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.6.3, 2026-11-12
+
+- Regenerated from eToro spec version v1.415.0.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the source header, which now names v1.415.0. No exported API changes.
+- The pinned Go toolchain moves to 1.26.11 in `go.mod` and `Dockerfile.dev`, which fixes the govulncheck finding GO-2026-6859 in `net/http`. The agent skill setup notes name the same version.
+
 ## v0.6.2, 2026-11-06
 
 - Regenerated from eToro spec version v1.413.0.
