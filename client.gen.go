@@ -4699,8 +4699,14 @@ type CopyTradingRegisterRequest struct {
 	// Amount Amount to allocate to the copy, in the account currency. Value must be non-zero. A positive value adds these funds into the copy sub-portfolio; a negative value removes funds from the sub-portfolio. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions.
 	Amount float32 `json:"amount"`
 
-	// ParentCID The investor account id to copy.
-	ParentCID int32 `json:"parentCID"`
+	// MirrorID Optional. Send it to change an existing copy by its id, as returned in the status response after a successful registration. The request adds or removes funds on that copy and never creates a new one; the copy must belong to the authenticated account.
+	MirrorID *int32 `json:"mirrorID,omitempty"`
+
+	// MirrorSLPercentage Optional stop-loss: the copy closes when its value falls to this percentage of its realized equity. Must be greater than 0 and less than 100, with at most 2 decimal places. On register (mirrorID absent), when a new copy is created and the field is omitted, the platform default stop-loss is applied. On edit (mirrorID present, or parentCID of an investor you already copy, handled as an edit of that copy), it is the new target value, not a change to the current one; when omitted, the stop-loss is left unchanged. On edit, the stop-loss can only be changed together with a funds change. Every funds change recalculates the stop-loss amount based on the copy's value including that change, while the stop-loss percentage stays the same. The stop-loss percentage is applied asynchronously and can be rejected, for example when the new level is outside the copied investor's limits (or the platform defaults if it has none) or, on edit, would immediately close the copy. If the stop-loss is rejected, a new registration creates no copy, while an edit can still apply the funds change and leaves the stop-loss unchanged. After a timeout, check the outcome with GET /api/v2/trading/copy/{referenceId} before resending.
+	MirrorSLPercentage *float32 `json:"mirrorSLPercentage,omitempty"`
+
+	// ParentCID The investor account id to copy. Required when mirrorID is not sent. If you already copy this investor, the request edits that existing copy. Do not send it together with mirrorID; when editing by mirrorID, the investor of that copy is used.
+	ParentCID *int32 `json:"parentCID,omitempty"`
 
 	// ReferenceID Caller-supplied operation reference used to poll the outcome. Case-sensitive, URL-safe characters without '/', unique per operation within your account. Not an idempotency key: resubmitting the same value creates a new operation, and status lookups for a reused reference prefer the successful outcome.
 	ReferenceID string `json:"referenceID"`
@@ -7719,7 +7725,7 @@ type PortfolioResponse struct {
 			PendingForClosure *bool `json:"pendingForClosure,omitempty"`
 
 			// Positions Positions within this copy trading mirror
-			Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
+			Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
 
 			// StartedCopyDate Date and time when the mirror trading was initiated
 			StartedCopyDate *time.Time `json:"startedCopyDate,omitempty"`
@@ -7789,7 +7795,7 @@ type PortfolioResponse struct {
 		OrdersForOpen *[]map[string]interface{} `json:"ordersForOpen,omitempty"`
 
 		// Positions List of currently open trading positions
-		Positions *[]TradingDemoApiPosition `json:"positions,omitempty"`
+		Positions *[]TradingRealApiPosition `json:"positions,omitempty"`
 
 		// StockOrders Obsolete
 		StockOrders *[]map[string]interface{} `json:"stockOrders,omitempty"`
@@ -8859,114 +8865,6 @@ type TradingDemoAdminApiUnifiedOrderRequestStopLossType string
 // Example: buy
 type TradingDemoAdminApiUnifiedOrderRequestTransaction string
 
-// TradingDemoApiPosition Individual position details
-type TradingDemoApiPosition struct {
-	// CID Customer ID associated with the position
-	CID *int `json:"CID,omitempty"`
-
-	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
-	Amount *float32 `json:"amount,omitempty"`
-
-	// InitialAmountInDollars Initial investment USD amount in the position
-	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
-
-	// InitialUnits Initial invested units in the position
-	InitialUnits *float32 `json:"initialUnits,omitempty"`
-
-	// InstrumentID Identifier of the traded instrument
-	InstrumentID *int `json:"instrumentID,omitempty"`
-
-	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
-	IsBuy *bool `json:"isBuy,omitempty"`
-
-	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
-	IsDetached *bool `json:"isDetached,omitempty"`
-
-	// IsDiscounted Obsolete
-	IsDiscounted *bool `json:"isDiscounted,omitempty"`
-
-	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
-	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
-
-	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
-	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
-
-	// IsPartiallyAltered Indication whether this position was partially closed
-	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
-
-	// IsSettled Obsolete
-	IsSettled *bool `json:"isSettled,omitempty"`
-
-	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
-	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
-
-	// Leverage Leverage multiplier applied to the position
-	Leverage *float32 `json:"leverage,omitempty"`
-
-	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
-	LotCount *float32 `json:"lotCount,omitempty"`
-
-	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
-	MirrorID *int `json:"mirrorID,omitempty"`
-
-	// OpenConversionRate Conversion rate at position opening
-	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
-
-	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
-	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
-
-	// OpenPositionActionType Position open reason
-	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
-
-	// OpenRate Entry price of the position in the instrument's currency
-	OpenRate *float32 `json:"openRate,omitempty"`
-
-	// OrderID Original orderID the position was opened by. Need to match together with orderType
-	OrderID *int `json:"orderID,omitempty"`
-
-	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
-	OrderType *int `json:"orderType,omitempty"`
-
-	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
-	ParentPositionID *int `json:"parentPositionID,omitempty"`
-
-	// PnlVersion Pnl formula used for calculating profit and loss
-	PnlVersion *int `json:"pnlVersion,omitempty"`
-
-	// PositionID Unique identifier for the position
-	PositionID *int `json:"positionID,omitempty"`
-
-	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
-	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
-
-	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
-	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
-
-	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
-	StopLossRate *float32 `json:"stopLossRate,omitempty"`
-
-	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
-	StopLossVersion *int `json:"stopLossVersion,omitempty"`
-
-	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
-	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
-
-	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
-	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
-
-	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
-	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
-
-	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
-	TotalFees *float32 `json:"totalFees,omitempty"`
-
-	// Units Number of units in the position
-	Units *float32 `json:"units,omitempty"`
-
-	// UnitsBaseValueDollars Current units invested value in USD
-	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
-}
-
 // TradingPortfolioDemoApiAggregatedPortfolioAccountTotals Account-level balance and equity totals.
 type TradingPortfolioDemoApiAggregatedPortfolioAccountTotals struct {
 	// AccountAvailableCash Cash available for new trades: accountBalance minus accountFrozenCash.
@@ -9604,6 +9502,114 @@ type TradingRealAdminApiUnifiedOrderRequestStopLossType string
 //
 // Example: buy
 type TradingRealAdminApiUnifiedOrderRequestTransaction string
+
+// TradingRealApiPosition Individual position details
+type TradingRealApiPosition struct {
+	// CID Customer ID associated with the position
+	CID *int `json:"CID,omitempty"`
+
+	// Amount USD amount allocated to the position. This amount includes both the initial investment, and additional margin allocated to the position as collateral
+	Amount *float32 `json:"amount,omitempty"`
+
+	// InitialAmountInDollars Initial investment USD amount in the position
+	InitialAmountInDollars *float32 `json:"initialAmountInDollars,omitempty"`
+
+	// InitialUnits Initial invested units in the position
+	InitialUnits *float32 `json:"initialUnits,omitempty"`
+
+	// InstrumentID Identifier of the traded instrument
+	InstrumentID *int `json:"instrumentID,omitempty"`
+
+	// IsBuy Position direction: true for long (buy) positions, false for short (sell) positions
+	IsBuy *bool `json:"isBuy,omitempty"`
+
+	// IsDetached Indication if the position was originally opened inside a mirror and detached from it
+	IsDetached *bool `json:"isDetached,omitempty"`
+
+	// IsDiscounted Obsolete
+	IsDiscounted *bool `json:"isDiscounted,omitempty"`
+
+	// IsNoStopLoss Indication if StopLoss is enabled for the position. false = enabled, true = disabled
+	IsNoStopLoss *bool `json:"isNoStopLoss,omitempty"`
+
+	// IsNoTakeProfit Indication if TakeProfit is enabled for the position. false = enabled, true = disabled
+	IsNoTakeProfit *bool `json:"isNoTakeProfit,omitempty"`
+
+	// IsPartiallyAltered Indication whether this position was partially closed
+	IsPartiallyAltered *bool `json:"isPartiallyAltered,omitempty"`
+
+	// IsSettled Obsolete
+	IsSettled *bool `json:"isSettled,omitempty"`
+
+	// IsTslEnabled Indication if TrailingStopLoss feature is active on this position
+	IsTslEnabled *bool `json:"isTslEnabled,omitempty"`
+
+	// Leverage Leverage multiplier applied to the position
+	Leverage *float32 `json:"leverage,omitempty"`
+
+	// LotCount Number of lots the position represents. For FutureContracts this value represents the number of contracts acquired
+	LotCount *float32 `json:"lotCount,omitempty"`
+
+	// MirrorID Mirror ID if the position is part of copy trading, 0 otherwise
+	MirrorID *int `json:"mirrorID,omitempty"`
+
+	// OpenConversionRate Conversion rate at position opening
+	OpenConversionRate *float32 `json:"openConversionRate,omitempty"`
+
+	// OpenDateTime Timestamp when the position was opened in ISO 8601 format
+	OpenDateTime *time.Time `json:"openDateTime,omitempty"`
+
+	// OpenPositionActionType Position open reason
+	OpenPositionActionType *int `json:"openPositionActionType,omitempty"`
+
+	// OpenRate Entry price of the position in the instrument's currency
+	OpenRate *float32 `json:"openRate,omitempty"`
+
+	// OrderID Original orderID the position was opened by. Need to match together with orderType
+	OrderID *int `json:"orderID,omitempty"`
+
+	// OrderType Original orderType of the order the position was opened by. Need to match together with orderID
+	OrderType *int `json:"orderType,omitempty"`
+
+	// ParentPositionID Parent position ID for mirrored positions, 0 otherwise
+	ParentPositionID *int `json:"parentPositionID,omitempty"`
+
+	// PnlVersion Pnl formula used for calculating profit and loss
+	PnlVersion *int `json:"pnlVersion,omitempty"`
+
+	// PositionID Unique identifier for the position
+	PositionID *int `json:"positionID,omitempty"`
+
+	// RedeemStatusID If the position is currently in redeem process, this value represents the current status
+	RedeemStatusID *int `json:"redeemStatusID,omitempty"`
+
+	// SettlementTypeID Position investment type. 0 - CFD, 1 - Real Asset, 2 - SWAP, 3 - Crypto MarginTrade, 4 - Future Contract
+	SettlementTypeID *int `json:"settlementTypeID,omitempty"`
+
+	// StopLossRate The stop-loss trigger price at which the position will generate a Market Order to close (after it was opened). StopLoss trigger price must be worse than current price.
+	StopLossRate *float32 `json:"stopLossRate,omitempty"`
+
+	// StopLossVersion Manual stop loss edit version. Each time StopLossRate is manually update this value is incremented
+	StopLossVersion *int `json:"stopLossVersion,omitempty"`
+
+	// TakeProfitRate The take-profit trigger price at which the position will generate a Market Order to close (after it has opened). TakeProfit trigger price must be better than the current price.
+	TakeProfitRate *float32 `json:"takeProfitRate,omitempty"`
+
+	// TotalExternalFees Total fees in USD charged on the position. Example - TicketFee. This value does not include overnight fees and dividends
+	TotalExternalFees *float32 `json:"totalExternalFees,omitempty"`
+
+	// TotalExternalTaxes Total taxes in USD charged on the position. Example - SDRT
+	TotalExternalTaxes *float32 `json:"totalExternalTaxes,omitempty"`
+
+	// TotalFees Total overnight fees and dividends charged/paid on the position in USD. Negative amount represents refund
+	TotalFees *float32 `json:"totalFees,omitempty"`
+
+	// Units Number of units in the position
+	Units *float32 `json:"units,omitempty"`
+
+	// UnitsBaseValueDollars Current units invested value in USD
+	UnitsBaseValueDollars *float32 `json:"unitsBaseValueDollars,omitempty"`
+}
 
 // TransferAccountRef Account identifier for a transfer participant
 type TransferAccountRef struct {
@@ -14409,7 +14415,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14422,7 +14428,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14472,7 +14478,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14485,7 +14491,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -18382,7 +18388,7 @@ func (c *Client) CloseCopyTrading(ctx context.Context, params *CloseCopyTradingP
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18405,7 +18411,7 @@ func (c *Client) RegisterCopyTradingWithBody(ctx context.Context, params *Regist
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18495,7 +18501,7 @@ func (c *Client) CloseCopyTradingDemo(ctx context.Context, params *CloseCopyTrad
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18518,7 +18524,7 @@ func (c *Client) RegisterCopyTradingDemoWithBody(ctx context.Context, params *Re
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -31334,7 +31340,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31347,7 +31353,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31399,7 +31405,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31412,7 +31418,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -47118,7 +47124,7 @@ func (c *ClientWithResponses) CloseCopyTradingWithResponse(ctx context.Context, 
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47137,7 +47143,7 @@ func (c *ClientWithResponses) RegisterCopyTradingWithBodyWithResponse(ctx contex
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47213,7 +47219,7 @@ func (c *ClientWithResponses) CloseCopyTradingDemoWithResponse(ctx context.Conte
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47232,7 +47238,7 @@ func (c *ClientWithResponses) RegisterCopyTradingDemoWithBodyWithResponse(ctx co
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints). To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //

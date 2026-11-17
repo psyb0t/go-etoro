@@ -2,6 +2,15 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.6.5, 2026-11-17
+
+- Regenerated the generated code (2 files changed, 135 insertions(+), 129 deletions(-)).
+- `CopyTradingRegisterRequest.ParentCID`: changed from int32 to *int32.
+- `TradingDemoApiPosition`: removed.
+- `CopyTradingRegisterRequest.MirrorID`: added.
+- `CopyTradingRegisterRequest.MirrorSLPercentage`: added.
+- `TradingRealApiPosition`: added.
+
 ## v0.6.4, 2026-11-16
 
 - Regenerated from eToro spec version v1.416.0.
