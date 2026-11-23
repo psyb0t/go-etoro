@@ -2,6 +2,13 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.7.0, 2026-11-23
+
+- Regenerated from eToro spec version v1.419.0.
+- REST: `TradingRealApiPosition` is removed. The `positions` fields in `PortfolioResponse` now use the new `TradingDemoApiPosition` type, which has the same fields, so code that names the old type must switch.
+- REST: the doc comments for `ParentCID` in `CopyTradingEligibilityRequest` and `CopyTradingRegisterRequest` now say the investor can be a user or a Smart Portfolio.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the source header, which now names v1.419.0. No exported API changes.
+
 ## v0.6.5, 2026-11-17
 
 - Regenerated the generated code (2 files changed, 135 insertions(+), 129 deletions(-)).
