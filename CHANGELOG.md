@@ -2,6 +2,15 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.8.0, 2026-11-25
+
+- Regenerated from eToro spec version v1.422.0.
+- REST: you can now identify the investor by username. Added `ParentUsername` to `CopyTradingEligibilityRequest`, `CopyTradingRegisterRequest`, `CopyTradingCloseRequest`, `CloseCopyTradingParams` and `CloseCopyTradingDemoParams`. Added `ParentCID` to the close request and both close params types.
+- REST: `CopyTradingCloseRequest.MirrorID`, `CloseCopyTradingParams.MirrorID` and `CloseCopyTradingDemoParams.MirrorID` change from `int32` to `*int32`. Close requests must send exactly one of `MirrorID`, `ParentCID` or `ParentUsername`.
+- REST: `CopyTradingEligibilityRequest.ParentCID` changes from `int32` to `*int32`. Send either `ParentCID` or `ParentUsername`.
+- REST: the eligibility, register and close responses (real, demo and the POST close variants) now have a `JSON404` field and a `GetJSON404` method holding a `CopyTradingErrorResponse`.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the source header, which now names v1.422.0. No exported API changes.
+
 ## v0.7.0, 2026-11-23
 
 - Regenerated from eToro spec version v1.419.0.

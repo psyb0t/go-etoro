@@ -4649,8 +4649,14 @@ type CopyTradingCloseRequest struct {
 	// ClientRequestID Optional idempotency key: repeated requests with the same value produce the same operation, and the response token echoes it.
 	ClientRequestID *openapi_types.UUID `json:"clientRequestID,omitempty"`
 
-	// MirrorID The copy relationship to close, as returned in the status response after a successful registration.
-	MirrorID int32 `json:"mirrorID"`
+	// MirrorID The copy to close, as returned in the status response after a successful registration. Send exactly one of mirrorID, parentCID or parentUsername.
+	MirrorID *int32 `json:"mirrorID,omitempty"`
+
+	// ParentCID The account id of the investor whose copy to close. Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentCID *int32 `json:"parentCID,omitempty"`
+
+	// ParentUsername The username of the investor whose copy to close (1 to 20 characters, with no space at the start or end; case-insensitive). Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentUsername *string `json:"parentUsername,omitempty"`
 
 	// UnregisterType Close liquidates the copy's positions; Detach releases them as self-managed positions.
 	UnregisterType *CopyTradingCloseRequestUnregisterType `json:"unregisterType,omitempty"`
@@ -4664,8 +4670,11 @@ type CopyTradingEligibilityRequest struct {
 	// Amount Amount that would be allocated to the copy, in the account currency. Value must be non-zero.
 	Amount float32 `json:"amount"`
 
-	// ParentCID The investor account id to copy: a user or a Smart Portfolio.
-	ParentCID int32 `json:"parentCID"`
+	// ParentCID The investor account id to copy: a user or a Smart Portfolio. Send either parentCID or parentUsername (not both).
+	ParentCID *int32 `json:"parentCID,omitempty"`
+
+	// ParentUsername The investor's username, as an alternative to parentCID. Send either parentCID or parentUsername (not both). 1 to 20 characters, with no space at the start or end; case-insensitive.
+	ParentUsername *string `json:"parentUsername,omitempty"`
 }
 
 // CopyTradingEligibilityResponse Eligibility verdict. Fields with no value are omitted from the response rather than sent as null.
@@ -4705,8 +4714,11 @@ type CopyTradingRegisterRequest struct {
 	// MirrorSLPercentage Optional stop-loss: the copy closes when its value falls to this percentage of its realized equity. Must be greater than 0 and less than 100, with at most 2 decimal places. On register (mirrorID absent), when a new copy is created and the field is omitted, the platform default stop-loss is applied. On edit (mirrorID present, or parentCID of an investor you already copy, handled as an edit of that copy), it is the new target value, not a change to the current one; when omitted, the stop-loss is left unchanged. On edit, the stop-loss can only be changed together with a funds change. Every funds change recalculates the stop-loss amount based on the copy's value including that change, while the stop-loss percentage stays the same. The stop-loss percentage is applied asynchronously and can be rejected, for example when the new level is outside the copied investor's limits (or the platform defaults if it has none) or, on edit, would immediately close the copy. If the stop-loss is rejected, a new registration creates no copy, while an edit can still apply the funds change and leaves the stop-loss unchanged. After a timeout, check the outcome with GET /api/v2/trading/copy/{referenceId} before resending.
 	MirrorSLPercentage *float32 `json:"mirrorSLPercentage,omitempty"`
 
-	// ParentCID The investor account id to copy: a user or a Smart Portfolio. Required when mirrorID is not sent. If you already copy this investor, the request edits that existing copy. Do not send it together with mirrorID; when editing by mirrorID, the investor of that copy is used.
+	// ParentCID The investor account id to copy: a user or a Smart Portfolio. When mirrorID is not sent, send either parentCID or parentUsername (not both). If you already copy this investor, the request edits that existing copy. Do not send it together with mirrorID or parentUsername; when editing by mirrorID, the investor of that copy is used.
 	ParentCID *int32 `json:"parentCID,omitempty"`
+
+	// ParentUsername The investor's username, as an alternative to parentCID. When mirrorID is not sent, send either parentCID or parentUsername (not both). As with parentCID, if you already copy this investor, the request edits that existing copy. Do not send it together with mirrorID. 1 to 20 characters, with no space at the start or end; case-insensitive.
+	ParentUsername *string `json:"parentUsername,omitempty"`
 
 	// ReferenceID Caller-supplied operation reference used to poll the outcome. Case-sensitive, URL-safe characters without '/', unique per operation within your account. Not an idempotency key: resubmitting the same value creates a new operation, and status lookups for a reused reference prefer the successful outcome.
 	ReferenceID string `json:"referenceID"`
@@ -11846,8 +11858,14 @@ type GetPortfolioRankingParams struct {
 
 // CloseCopyTradingParams defines parameters for CloseCopyTrading.
 type CloseCopyTradingParams struct {
-	// MirrorID The copy relationship to close, as returned in the status response after a successful registration.
-	MirrorID int32 `form:"mirrorID" json:"mirrorID"`
+	// MirrorID The copy to close, as returned in the status response after a successful registration. Send exactly one of mirrorID, parentCID or parentUsername.
+	MirrorID *int32 `form:"mirrorID,omitempty" json:"mirrorID,omitempty"`
+
+	// ParentCID The account id of the investor whose copy to close. Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentCID *int32 `form:"parentCID,omitempty" json:"parentCID,omitempty"`
+
+	// ParentUsername The username of the investor whose copy to close (1 to 20 characters, with no space at the start or end; case-insensitive). Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentUsername *string `form:"parentUsername,omitempty" json:"parentUsername,omitempty"`
 
 	// UnregisterType Close liquidates the copy's positions; Detach releases them as self-managed positions. Defaults to Close.
 	UnregisterType *CloseCopyTradingParamsUnregisterType `form:"unregisterType,omitempty" json:"unregisterType,omitempty"`
@@ -11876,8 +11894,14 @@ type CloseCopyTradingViaPostParams struct {
 
 // CloseCopyTradingDemoParams defines parameters for CloseCopyTradingDemo.
 type CloseCopyTradingDemoParams struct {
-	// MirrorID The copy relationship to close, as returned in the status response after a successful registration.
-	MirrorID int32 `form:"mirrorID" json:"mirrorID"`
+	// MirrorID The copy to close, as returned in the status response after a successful registration. Send exactly one of mirrorID, parentCID or parentUsername.
+	MirrorID *int32 `form:"mirrorID,omitempty" json:"mirrorID,omitempty"`
+
+	// ParentCID The account id of the investor whose copy to close. Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentCID *int32 `form:"parentCID,omitempty" json:"parentCID,omitempty"`
+
+	// ParentUsername The username of the investor whose copy to close (1 to 20 characters, with no space at the start or end; case-insensitive). Send exactly one of mirrorID, parentCID or parentUsername.
+	ParentUsername *string `form:"parentUsername,omitempty" json:"parentUsername,omitempty"`
 
 	// UnregisterType Close liquidates the copy's positions; Detach releases them as self-managed positions. Defaults to Close.
 	UnregisterType *CloseCopyTradingDemoParamsUnregisterType `form:"unregisterType,omitempty" json:"unregisterType,omitempty"`
@@ -14404,7 +14428,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Corresponds with DELETE /api/v2/trading/copy (the `CloseCopyTrading` operationId).
 	CloseCopyTrading(ctx context.Context, params *CloseCopyTradingParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -14415,7 +14439,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14428,7 +14452,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14441,7 +14465,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14454,7 +14478,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14467,7 +14491,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Corresponds with DELETE /api/v2/trading/copy/demo (the `CloseCopyTradingDemo` operationId).
 	CloseCopyTradingDemo(ctx context.Context, params *CloseCopyTradingDemoParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -14478,7 +14502,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14491,7 +14515,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14504,7 +14528,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14517,7 +14541,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14530,7 +14554,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14543,7 +14567,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -14567,7 +14591,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -14580,7 +14604,7 @@ type ClientInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -18367,7 +18391,7 @@ func (c *Client) GetPortfolioRanking(ctx context.Context, username string, param
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Corresponds with DELETE /api/v2/trading/copy (the `CloseCopyTrading` operationId).
 func (c *Client) CloseCopyTrading(ctx context.Context, params *CloseCopyTradingParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -18388,7 +18412,7 @@ func (c *Client) CloseCopyTrading(ctx context.Context, params *CloseCopyTradingP
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18411,7 +18435,7 @@ func (c *Client) RegisterCopyTradingWithBody(ctx context.Context, params *Regist
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18434,7 +18458,7 @@ func (c *Client) RegisterCopyTrading(ctx context.Context, params *RegisterCopyTr
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18457,7 +18481,7 @@ func (c *Client) CloseCopyTradingViaPostWithBody(ctx context.Context, params *Cl
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18480,7 +18504,7 @@ func (c *Client) CloseCopyTradingViaPost(ctx context.Context, params *CloseCopyT
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Corresponds with DELETE /api/v2/trading/copy/demo (the `CloseCopyTradingDemo` operationId).
 func (c *Client) CloseCopyTradingDemo(ctx context.Context, params *CloseCopyTradingDemoParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -18501,7 +18525,7 @@ func (c *Client) CloseCopyTradingDemo(ctx context.Context, params *CloseCopyTrad
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18524,7 +18548,7 @@ func (c *Client) RegisterCopyTradingDemoWithBody(ctx context.Context, params *Re
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18547,7 +18571,7 @@ func (c *Client) RegisterCopyTradingDemo(ctx context.Context, params *RegisterCo
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18570,7 +18594,7 @@ func (c *Client) CloseCopyTradingViaPostDemoWithBody(ctx context.Context, params
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18593,7 +18617,7 @@ func (c *Client) CloseCopyTradingViaPostDemo(ctx context.Context, params *CloseC
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18616,7 +18640,7 @@ func (c *Client) CheckCopyTradingEligibilityDemoWithBody(ctx context.Context, pa
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -18660,7 +18684,7 @@ func (c *Client) GetCopyTradingStatusDemo(ctx context.Context, referenceId strin
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes any type of body and a specified content type.
 //
@@ -18683,7 +18707,7 @@ func (c *Client) CheckCopyTradingEligibilityWithBody(ctx context.Context, params
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -27416,12 +27440,40 @@ func NewCloseCopyTradingRequest(server string, params *CloseCopyTradingParams) (
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
 		var rawQueryFragments []string
 
-		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "mirrorID", params.MirrorID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
-			return nil, err
-		} else {
-			for _, qp := range strings.Split(queryFrag, "&") {
-				rawQueryFragments = append(rawQueryFragments, qp)
+		if params.MirrorID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "mirrorID", *params.MirrorID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
 			}
+
+		}
+
+		if params.ParentCID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "parentCID", *params.ParentCID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ParentUsername != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "parentUsername", *params.ParentUsername, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
 		}
 
 		if params.UnregisterType != nil {
@@ -27609,12 +27661,40 @@ func NewCloseCopyTradingDemoRequest(server string, params *CloseCopyTradingDemoP
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
 		var rawQueryFragments []string
 
-		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "mirrorID", params.MirrorID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
-			return nil, err
-		} else {
-			for _, qp := range strings.Split(queryFrag, "&") {
-				rawQueryFragments = append(rawQueryFragments, qp)
+		if params.MirrorID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "mirrorID", *params.MirrorID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
 			}
+
+		}
+
+		if params.ParentCID != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "parentCID", *params.ParentCID, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int32"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.ParentUsername != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "parentUsername", *params.ParentUsername, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
 		}
 
 		if params.UnregisterType != nil {
@@ -31327,7 +31407,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -31340,7 +31420,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31353,7 +31433,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31366,7 +31446,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31379,7 +31459,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31392,7 +31472,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -31405,7 +31485,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31418,7 +31498,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+	// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31431,7 +31511,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31444,7 +31524,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+	// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31457,7 +31537,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31470,7 +31550,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31496,7 +31576,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -31509,7 +31589,7 @@ type ClientWithResponsesInterface interface {
 	//
 	// ---
 	//
-	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+	// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -41755,6 +41835,8 @@ type CloseCopyTradingResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -41781,6 +41863,11 @@ func (r CloseCopyTradingResponse) GetJSON401() *GatewayErrorResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CloseCopyTradingResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CloseCopyTradingResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -41845,6 +41932,8 @@ type RegisterCopyTradingResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -41871,6 +41960,11 @@ func (r RegisterCopyTradingResponse) GetJSON401() *GatewayErrorResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r RegisterCopyTradingResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RegisterCopyTradingResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -41935,6 +42029,8 @@ type CloseCopyTradingViaPostResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -41961,6 +42057,11 @@ func (r CloseCopyTradingViaPostResponse) GetJSON401() *GatewayErrorResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CloseCopyTradingViaPostResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CloseCopyTradingViaPostResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -42025,6 +42126,8 @@ type CloseCopyTradingDemoResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -42051,6 +42154,11 @@ func (r CloseCopyTradingDemoResponse) GetJSON401() *GatewayErrorResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CloseCopyTradingDemoResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CloseCopyTradingDemoResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -42115,6 +42223,8 @@ type RegisterCopyTradingDemoResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -42141,6 +42251,11 @@ func (r RegisterCopyTradingDemoResponse) GetJSON401() *GatewayErrorResponse {
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r RegisterCopyTradingDemoResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RegisterCopyTradingDemoResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -42205,6 +42320,8 @@ type CloseCopyTradingViaPostDemoResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// Headers200 the parsed response headers for an HTTP 200 response
@@ -42231,6 +42348,11 @@ func (r CloseCopyTradingViaPostDemoResponse) GetJSON401() *GatewayErrorResponse 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CloseCopyTradingViaPostDemoResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CloseCopyTradingViaPostDemoResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -42295,6 +42417,8 @@ type CheckCopyTradingEligibilityDemoResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// JSON500 the response for an HTTP 500 `application/json` response
@@ -42323,6 +42447,11 @@ func (r CheckCopyTradingEligibilityDemoResponse) GetJSON401() *GatewayErrorRespo
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CheckCopyTradingEligibilityDemoResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CheckCopyTradingEligibilityDemoResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -42489,6 +42618,8 @@ type CheckCopyTradingEligibilityResponse struct {
 	JSON401 *GatewayErrorResponse
 	// JSON403 the response for an HTTP 403 `application/json` response
 	JSON403 *GatewayErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *CopyTradingErrorResponse
 	// JSON429 the response for an HTTP 429 `application/json` response
 	JSON429 *GatewayErrorResponse
 	// JSON500 the response for an HTTP 500 `application/json` response
@@ -42517,6 +42648,11 @@ func (r CheckCopyTradingEligibilityResponse) GetJSON401() *GatewayErrorResponse 
 // GetJSON403 returns the response for an HTTP 403 `application/json` response
 func (r CheckCopyTradingEligibilityResponse) GetJSON403() *GatewayErrorResponse {
 	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CheckCopyTradingEligibilityResponse) GetJSON404() *CopyTradingErrorResponse {
+	return r.JSON404
 }
 
 // GetJSON429 returns the response for an HTTP 429 `application/json` response
@@ -47105,7 +47241,7 @@ func (c *ClientWithResponses) GetPortfolioRankingWithResponse(ctx context.Contex
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -47124,7 +47260,7 @@ func (c *ClientWithResponses) CloseCopyTradingWithResponse(ctx context.Context, 
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47143,7 +47279,7 @@ func (c *ClientWithResponses) RegisterCopyTradingWithBodyWithResponse(ctx contex
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47162,7 +47298,7 @@ func (c *ClientWithResponses) RegisterCopyTradingWithResponse(ctx context.Contex
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47181,7 +47317,7 @@ func (c *ClientWithResponses) CloseCopyTradingViaPostWithBodyWithResponse(ctx co
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47200,7 +47336,7 @@ func (c *ClientWithResponses) CloseCopyTradingViaPostWithResponse(ctx context.Co
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. The relationship is selected by mirrorID; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername; identity is resolved from the authenticated caller. This binding takes all fields as query parameters and rejects any request carrying a body — use POST /api/v2/trading/copy/demo/close for a JSON-body equivalent. The operation is asynchronous and the response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -47219,7 +47355,7 @@ func (c *ClientWithResponses) CloseCopyTradingDemoWithResponse(ctx context.Conte
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47238,7 +47374,7 @@ func (c *ClientWithResponses) RegisterCopyTradingDemoWithBodyWithResponse(ctx co
 //
 // ---
 //
-// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. To change a specific existing copy, you can send its mirrorID instead of parentCID. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
+// Registers a copy relationship with the given investor for the authenticated account. If the copy already exists, funds will be added to or removed from it; if it does not exist, a new copy will be created and funds transferred into it. Every change of funds causes a realignment process that adjusts all the positions inside the sub-portfolio to match the parent portfolio proportions. Investor account ids (parentCID) are the ids surfaced by the platform's public endpoints (for example, the Rankings endpoints); both users and Smart Portfolios can be copied. Instead of parentCID you can name the investor by parentUsername; send one of the two, not both. If you already copy this investor, the request edits that existing copy, whether you send parentCID or parentUsername. You can also edit an existing copy by sending its mirrorID instead of parentCID or parentUsername. The operation is asynchronous: the response token acknowledges acceptance, and the outcome can be checked via GET /api/v2/trading/copy/demo/{referenceId} using the referenceID supplied here.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47257,7 +47393,7 @@ func (c *ClientWithResponses) RegisterCopyTradingDemoWithResponse(ctx context.Co
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47276,7 +47412,7 @@ func (c *ClientWithResponses) CloseCopyTradingViaPostDemoWithBodyWithResponse(ct
 //
 // ---
 //
-// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
+// This action closes the sub-portfolio of the copy relationship. There are 2 ways to close the sub-portfolio: (a) Close — close all positions and withdraw the funds back to the main portfolio balance; (b) Detach — detach the positions from the sub-portfolio and move them into the main portfolio, and withdraw the sub-portfolio cash balance back into the main portfolio balance. These correspond to the unregisterType values Close and Detach. Name the copy to close in exactly one of three ways: by its mirrorID, by the parentCID of the investor you copy, or by that investor's parentUsername. Identical semantics to DELETE /api/v2/trading/copy/demo, with the fields carried in a JSON body instead of query parameters — provided because some HTTP clients and proxies handle DELETE requests with bodies unreliably. The response token is an acknowledgment only: close completion is not pollable through this API.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47295,7 +47431,7 @@ func (c *ClientWithResponses) CloseCopyTradingViaPostDemoWithResponse(ctx contex
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47314,7 +47450,7 @@ func (c *ClientWithResponses) CheckCopyTradingEligibilityDemoWithBodyWithRespons
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy/demo). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47352,7 +47488,7 @@ func (c *ClientWithResponses) GetCopyTradingStatusDemoWithResponse(ctx context.C
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -47371,7 +47507,7 @@ func (c *ClientWithResponses) CheckCopyTradingEligibilityWithBodyWithResponse(ct
 //
 // ---
 //
-// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Request body is the same as starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
+// A dry run of the register operation that changes nothing: verifies whether the authenticated account can copy the given investor with the given amount. Name the investor with parentCID or parentUsername (send one of the two, not both), together with the amount, as when starting a new copy (POST /api/v2/trading/copy). A positive verdict is a point-in-time check, not a reservation. When isSuccess is false, errorCode and errorMessage may be absent.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -62484,6 +62620,13 @@ func ParseCloseCopyTradingResponse(rsp *http.Response) (*CloseCopyTradingRespons
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -62609,6 +62752,13 @@ func ParseRegisterCopyTradingResponse(rsp *http.Response) (*RegisterCopyTradingR
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
@@ -62736,6 +62886,13 @@ func ParseCloseCopyTradingViaPostResponse(rsp *http.Response) (*CloseCopyTrading
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -62861,6 +63018,13 @@ func ParseCloseCopyTradingDemoResponse(rsp *http.Response) (*CloseCopyTradingDem
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
@@ -62988,6 +63152,13 @@ func ParseRegisterCopyTradingDemoResponse(rsp *http.Response) (*RegisterCopyTrad
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -63114,6 +63285,13 @@ func ParseCloseCopyTradingViaPostDemoResponse(rsp *http.Response) (*CloseCopyTra
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -63239,6 +63417,13 @@ func ParseCheckCopyTradingEligibilityDemoResponse(rsp *http.Response) (*CheckCop
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
@@ -63505,6 +63690,13 @@ func ParseCheckCopyTradingEligibilityResponse(rsp *http.Response) (*CheckCopyTra
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest CopyTradingErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 429:
 		var dest GatewayErrorResponse
