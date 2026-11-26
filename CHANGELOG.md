@@ -2,6 +2,11 @@
 
 All notable changes per release. Versions follow [semver](https://semver.org).
 
+## v0.8.1, 2026-11-26
+
+- Regenerated from eToro spec version v1.424.0.
+- WebSocket: `ws/etorows.gen.go` changes by one line, the source header, which now names v1.424.0. No exported API changes.
+
 ## v0.8.0, 2026-11-25
 
 - Regenerated from eToro spec version v1.422.0.
